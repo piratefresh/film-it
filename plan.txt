@@ -1,0 +1,52 @@
+Film-it - acting gigs for students.
+
+Homepage == Landing Page
+Posts => Find acts => search acts based on location, pay, genres, name, production => like post and comment
+Profile page => experience, educationed?
+
+
+  "proxy": {
+    "/auth/google": {
+      "target": "http://localhost:5000"
+    },
+    "/api/*": {
+      "target": "http://localhost:5000"
+    }
+  },
+
+enctype="multipart/form-data"
+
+Role Description = https://filmincolorado.com/resources/job-descriptions/
+
+Post State = 
+            title: '',
+            desc: '',
+            roledesc: '',
+            budget: '',
+            location: '',
+            tags: '',
+            email: '',
+            phone: '',
+
+Redux = Make state more predicatable
+Put state into one location instead of spread
+
+State tree > all our state
+Old way > moving that state up to the nearest parent
+
+State tree 
+* Shared Cache 
+* Predicatable State Changes
+* Improved Developer Tooling
+* Pure Function
+* Server Rendering
+
+Making State tree strick
+
+Store -> State Tree = Get, Listen, Update
+
+CreateStore
+    1. The State
+    2. Get the State
+    3. Listen to changes on the State
+    4. Update the state

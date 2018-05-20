@@ -1,0 +1,29 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+// Create Schema
+const UserSchema = new Schema({
+  local: {
+    name: String,
+    email: String,
+    password: String,
+    date: {
+      type: Date,
+      default: Date.now
+    }
+  },
+  facebook: {
+    id: String,
+    token: String,
+    name: String,
+    email: String
+  },
+  google: {
+    id: String,
+    token: String,
+    email: String,
+    name: String
+  }
+});
+
+module.exports = User = mongoose.model("users", UserSchema);

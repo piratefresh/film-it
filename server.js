@@ -1,5 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const passport = require("passport");
+const morgan = require("morgan");
+const cookieSession = require("cookie-session");
+const keys = require("./config/keys");
+// Login Social
+require("./modules/User");
+require("./authentication/google");
+require("./authentication/facebook");
 
 // Get Routes
 const users = require("./routes/api/users");
@@ -7,6 +17,15 @@ const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
 
 const app = express();
+
+// log every request to the console
+app.use(morgan("dev"));
+// Image
+app.use("/uploads", express.static("uploads"));
+app.use(cookieParser());
+// Body parser middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // DB Config
 const db = require("./config/keys").mongoURI;
@@ -16,9 +35,36 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
+// Sets cookie with the unqiue google id
+app.use(
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    keys: [keys.cookieKey]
+  })
+);
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+// User model added to req object as req.user
+//  Turns id into user
+passport.deserializeUser((id, done) => {
+  User.findById(id).then(user => {
+    done(null, user);
+  });
+});
+
+// Passport config
+require("./authentication/local")(passport);
+
 // Routes
 app.get("/", (req, res) => res.send("Hello!"));
 // Use Routes
+require("./routes/authRoutes")(app);
 app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/posts", posts);

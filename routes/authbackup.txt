@@ -1,0 +1,148 @@
+const express = require("express");
+const router = express.Router();
+const gravatar = require("gravatar");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const keys = require("../config/keys");
+const passport = require("passport");
+
+// Load input validation
+const validationRegisterInput = require("../validation/register");
+const validationLoginInput = require("../validation/login");
+const isLoggedIn = require("../middlewares/isLoggedIn");
+
+module.exports = router => {
+  /* LOCAl Strat */
+  // @route   GET /register
+  // @desc    Register user
+  // @access  Public
+  router.post("/auth/local/register", (req, res) => {
+    const { errors, isValid } = validationRegisterInput(req.body);
+    // Check validation of input
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    User.findOne({ email: req.body.email }).then(user => {
+      // Check if email exist or not
+      if (user) {
+        errors.email = "Email already exists";
+        return res.status(400).json(errors);
+      } else {
+        const newUser = new User({
+          // Req.body access through bodyparser
+          name: req.body.name,
+          email: req.body.email,
+          local: {
+            password: req.body.password
+          }
+        });
+        // Encrypts the password
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(newUser.local.password, salt, (err, hash) => {
+            if (err) throw err;
+            newUser.local.password = hash;
+            newUser
+              .save()
+              .then(user => res.json(user))
+              .catch(err => console.log(err));
+          });
+        });
+      }
+    });
+  });
+
+  // @route   Post login
+  // @desc    Login User / returning JWT Toekn
+  // @access  Public
+  router.post("/auth/local/login", (req, res) => {
+    const { errors, isValid } = validationLoginInput(req.body);
+    // Check validation of input
+    if (!isValid) {
+      errors.email = "User not found";
+      return res.status(400).json(errors);
+    }
+
+    const email = req.body.email;
+    const password = req.body.password;
+    // Find user by email
+    User.findOne({ email: email }).then(user => {
+      // Check for user
+      if (!user) {
+        return res.status(404).json({ email: "Email not found" });
+      }
+
+      //Check password
+      bcrypt.compare(password, user.local.password).then(isMatch => {
+        if (isMatch) {
+          // User matched
+          console.log(user);
+          const payload = { id: user.id, name: user.name, email: user.email }; // Create JWT Payload
+          console.log(payload);
+          // Sign Token
+          jwt.sign(
+            payload,
+            keys.secretOrKey,
+            { expiresIn: 3600 },
+            (err, token) => {
+              res.json({
+                success: true,
+                token: "Bearer " + token
+              });
+            }
+          );
+        } else {
+          errors.password = "Password incorrect";
+          return res.status(400).json(errors);
+        }
+      });
+    });
+  });
+
+  // =====================================
+  // GOOGLE ROUTES =======================
+  // =====================================
+  // send to google to do the authentication
+  // profile gets us their basic information including their name
+  // email gets their emails
+  router.get(
+    "/auth/google",
+    passport.authenticate("google", { scope: ["profile", "email"] })
+  );
+
+  // the callback after google has authenticated the user
+  router.get(
+    "/auth/google/callback",
+    passport.authenticate("google", { failureRedirect: "/" }),
+    (req, res) => {
+      res.redirect("/dashboard");
+    }
+  );
+
+  // =====================================
+  // FACEBOOK ROUTES =====================
+  // =====================================
+  // route for facebook authentication and login
+  /*   router.get(
+    "/auth/facebook",
+    passport.authenticate("facebook", {
+      scope: ["public_profile", "email"]
+    })
+  );
+
+  // handle the callback after facebook has authenticated the user
+  router.get(
+    "/auth/facebook/callback",
+    passport.authenticate("facebook", {
+      successRedirect: "/profile",
+      failureRedirect: "/"
+    })
+  ); */
+
+  // route for logging out
+  router.get("/auth/logout", (req, res) => {
+    req.logout();
+    req.session = null;
+    res.redirect("/");
+  });
+};
