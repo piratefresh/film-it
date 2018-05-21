@@ -7,6 +7,8 @@ import {
   GET_ERRORS
 } from "./types";
 
+import { logoutUser } from "./authActions";
+
 /* // Get current profile
 export const getCurrentProfile = () => async dispatch => {
   dispatch(setProfileLoading());
@@ -52,6 +54,21 @@ export const createProfile = (profileData, history) => dispatch => {
     );
 };
 
+// Add experience
+export const addProfilePicture = (imgData, history) => dispatch => {
+  axios
+    .post("/api/profile/profilepic", imgData)
+    .then(res => {
+      history.push("/dashboard");
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 // Profile loading
 export const setProfileLoading = () => {
   return {
@@ -64,4 +81,19 @@ export const clearCurrentProfile = () => {
   return {
     type: CLEAR_CURRENT_PROFILE
   };
+};
+
+// Delete Account and profile
+export const deleteAccount = () => dispatch => {
+  if (window.confirm("You sure you want to delete account?")) {
+    axios
+      .delete("/api/profile")
+      .then(res => dispatch(logoutUser()))
+      .catch(err =>
+        dispatch({
+          type: GET_ERRORS,
+          payload: err.response.data
+        })
+      );
+  }
 };

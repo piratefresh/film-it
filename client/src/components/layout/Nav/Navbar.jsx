@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser, logoutGoogleUser } from "../../../actions/authActions";
 import { clearCurrentProfile } from "../../../actions/profileActions";
+//frontend
+import Spinner from "../../common/Spinner";
 
 const Nav = styled.nav`
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
@@ -29,6 +31,7 @@ const NavUl = styled.ul`
   list-style: none;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const NavLink = styled.a`
@@ -36,6 +39,14 @@ const NavLink = styled.a`
   text-transform: uppercase;
   text-decoration: none;
   color: #7d48df;
+  vertical-align: middle;
+`;
+const NavImg = styled.img`
+  object-fit: cover;
+  width: 25px;
+  margin-right: 5px;
+  vertical-align: middle;
+  border-radius: 50%;
 `;
 
 class Navbar extends Component {
@@ -47,7 +58,8 @@ class Navbar extends Component {
   }
 
   render() {
-    const { isAuthenticated /* user get image later*/ } = this.props.auth;
+    const { isAuthenticated } = this.props.auth;
+    const { profile, loading } = this.props.profile;
     const authLinks = (
       <NavUl>
         <NavLink href="/posts">
@@ -82,7 +94,9 @@ class Navbar extends Component {
           <NavLink href="/">
             <h2>Film-It</h2>
           </NavLink>
-          {isAuthenticated ? authLinks : guestLinks}
+          {isAuthenticated || Object.keys(profile).length > 0
+            ? authLinks
+            : guestLinks}
         </Navcontent>
       </Nav>
     );
@@ -92,11 +106,13 @@ class Navbar extends Component {
 Navbar.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   logoutGoogleUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  profile: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  profile: state.profile
 });
 
 export default connect(mapStateToProps, {

@@ -1,25 +1,22 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
 import { clearCurrentProfile } from "./actions/profileActions";
-import * as actions from "./actions/authActions";
 import styled from "styled-components";
-import { connect } from "react-redux";
 import store from "./store";
 import PropTypes from "prop-types";
-
 import { Provider } from "react-redux";
 import PrivateRoute from "./components/common/PrivateRoute";
-
+//Components
 import Navbar from "./components/layout/Nav/Navbar";
 import Landing from "./components/layout/Landing";
 import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
-/* import CreateProfile from "./components/create-profile/CreateProfile"; */
 import CreateProfileNew from "./components/create-profile/CreateProfileNew";
+import EditProfile from "./components/edit-profile/EditProfile";
 import Login from "./components/auth/Login";
 import "./App.css";
 import bgPattern from "./img/svg/topography.svg";
@@ -54,7 +51,7 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <Router>
+        <BrowserRouter>
           <div className="App">
             <Wrapper>
               <Navbar />
@@ -68,13 +65,18 @@ class App extends Component {
                   path="/create-profile"
                   component={CreateProfileNew}
                 />
+                <PrivateRoute
+                  exact
+                  path="/edit-profile"
+                  component={EditProfile}
+                />
               </Switch>
               <Footer>
                 <p>Film-It &copy; {new Date().getFullYear()}</p>
               </Footer>
             </Wrapper>
           </div>
-        </Router>
+        </BrowserRouter>
       </Provider>
     );
   }

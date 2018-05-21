@@ -2,7 +2,14 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const passport = require("passport");
+const keys = require("../../config/keys");
 const multer = require("multer");
+const cloudinary = require("cloudinary");
+cloudinary.config({
+  cloud_name: keys.cloudinaryName,
+  api_key: keys.cloudinaryKey,
+  api_secret: keys.cloudinarySecret
+});
 
 // Load Validation
 const validateProfileInput = require("../../validation/profile");
@@ -14,33 +21,21 @@ const isAuth = require("../../middlewares/isAuth");
 const Profile = require("../../modules/Profile");
 // Load user model
 const User = require("../../modules/User");
-
-//Multer Storage config
+// Multer config
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function(req, file, cb) {
-    cb(null, new Date().toISOString() + file.originalname);
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
   }
 });
-//Multer filter
-const fileFilter = (req, file, cb) => {
-  // Reject file not jpg, png
-  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-    cb(null, true);
-  } else {
-    cb(null, false);
+const imageFilter = function(req, file, cb) {
+  // accept image files only
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+    return cb(new Error("Only image files are allowed!"), false);
   }
+  cb(null, true);
 };
 // Multer init
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5 // 5mb file size limit
-  },
-  fileFilter
-});
+const upload = multer({ storage: storage, fileFilter: imageFilter });
 
 // @route   GET api/profile/test
 // @desc    Tests post route
@@ -123,65 +118,82 @@ router.get("/user/:user_id", (req, res) => {
 // @route   Post api/profile/
 // @desc    Create or edit user profile
 // @access  Private
-// Multer upload middleware config
-const cpUpload = upload.fields([
-  { name: "avatar", maxCount: 1 },
-  { name: "gallery", maxCount: 6 }
-]);
-router.post("/", isAuth, (req, res) => {
+router.post("/", isAuth, upload.single("avatar"), (req, res) => {
   const { errors, isValid } = validateProfileInput(req.body);
   // Check Validation
   if (!isValid) {
     // Return any errors with 400 status
     return res.status(400).json(errors);
   }
-  // Get fields
-  const profileFields = {};
-  // Get user id, email name avatar
-  profileFields.user = req.user.id;
-  if (req.body.handle) profileFields.handle = req.body.handle;
-  if (req.body.company) profileFields.company = req.body.company;
-  if (req.body.website) profileFields.website = req.body.website;
-  if (req.body.city) profileFields.city = req.body.city;
-  if (req.body.state) profileFields.state = req.body.state;
-  if (req.body.bio) profileFields.bio = req.body.bio;
-  if (req.body.role) profileFields.role = req.body.role;
-  if (req.body.reel) profileFields.reel = req.body.handle;
-  /*   if (req.files["avatar"][0].path) profileFields.avatar = req.body.avatar;
-  if (req.files["gallery"].path) profileFields.gallery = req.body.gallery; */
-  //Skills - split into array
-  if (typeof req.body.skills !== "undefined") {
-    profileFields.skills = req.body.skills.split(",");
-  }
-  // Social fields
-  profileFields.social = {};
-  if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
-  if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
-  if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
-  if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
-  if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
-
-  // Finds one user by ID
-  Profile.findOne({ user: req.user.id }).then(profile => {
-    if (profile) {
-      // Update Profile
-      Profile.findOneAndUpdate(
-        { user: req.user.id },
-        { $set: profileFields },
-        { new: true }
-      ).then(profile => res.json(profile));
-    } else {
-      // Create profile
-      // Check if handle exists (username)
-      Profile.findOne({ handle: profileFields.handle }).then(profile => {
-        if (profile) {
-          errors.handle = "That handle already exists";
-          res.status(400).json(errors);
-        }
-        //Save Profile
-        new Profile(profileFields).save().then(profile => res.json(profile));
-      });
+  cloudinary.uploader.upload(req.file.path, result => {
+    req.body.avatar = result.secure_url;
+    console.log(result);
+    // Get fields
+    const profileFields = {};
+    // Get user id, email name avatar
+    profileFields.user = req.user.id;
+    if (req.body.avatar) profileFields.avatar = req.body.avatar;
+    if (req.body.handle) profileFields.handle = req.body.handle;
+    if (req.body.company) profileFields.company = req.body.company;
+    if (req.body.website) profileFields.website = req.body.website;
+    if (req.body.city) profileFields.city = req.body.city;
+    if (req.body.state) profileFields.state = req.body.state;
+    if (req.body.bio) profileFields.bio = req.body.bio;
+    if (req.body.role) profileFields.role = req.body.role;
+    if (req.body.reel) profileFields.reel = req.body.handle;
+    if (typeof req.body.skills !== "undefined") {
+      profileFields.skills = req.body.skills.split(",");
     }
+    // Social fields
+    profileFields.social = {};
+    if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
+    if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
+    if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
+    if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
+    if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
+
+    // Finds one user by ID
+    Profile.findOne({ user: req.user.id }).then(profile => {
+      if (profile) {
+        // Update Profile
+        Profile.findOneAndUpdate(
+          { user: req.user.id },
+          { $set: profileFields },
+          { new: true }
+        ).then(profile => res.json(profile));
+      } else {
+        // Create profile
+        // Check if handle exists (username)
+        Profile.findOne({ handle: profileFields.handle }).then(profile => {
+          if (profile) {
+            errors.handle = "That handle already exists";
+            res.status(400).json(errors);
+          }
+          //Save Profile
+          new Profile(profileFields).save().then(profile => res.json(profile));
+        });
+      }
+    });
+  });
+});
+
+// @route   POST api/profile/profilepic
+// @desc    Add experince to profile
+// @access  Private
+router.post("/profilepic", isAuth, upload.single("image"), (req, res) => {
+  cloudinary.uploader.upload(req.file.path, result => {
+    req.body.image = result.secure_url;
+    console.log(result);
+    Profile.findOne({ user: req.user.id }).then(profile => {
+      const newImg = {
+        image: req.body.image
+      };
+
+      // Add to experience array
+      profile.gallery.unshift(newImg);
+      // Save profile
+      profile.save().then(profile => res.json(profile));
+    });
   });
 });
 

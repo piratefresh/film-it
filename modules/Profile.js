@@ -12,7 +12,7 @@ const ProfileSchema = new Schema({
     required: true,
     max: 40
   },
-  profileimg: {
+  avatar: {
     type: String
   },
   company: {
@@ -41,7 +41,13 @@ const ProfileSchema = new Schema({
   reel: {
     type: String
   },
-  gallery: [{ type: String }],
+  gallery: [
+    {
+      image: {
+        type: String
+      }
+    }
+  ],
   experience: [
     {
       title: {

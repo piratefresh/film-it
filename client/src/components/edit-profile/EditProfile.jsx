@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { createProfile } from "../../actions/profileActions";
+import { createProfile, getCurrentProfile } from "../../actions/profileActions";
 import { withRouter } from "react-router-dom";
+import isEmpty from "../../validation/is-empty";
 
 //Import Material-UI input field
 import TextField from "@material-ui/core/TextField";
@@ -92,9 +93,60 @@ class CreateProfile extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  componentDidMount() {
+    this.props.getCurrentProfile();
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
+    }
+    if (nextProps.profile.profile) {
+      const profile = nextProps.profile.profile;
+      // Bring skills array back to CSV
+      const skillsCSV = profile.skills.join(",");
+      // if profile field dosen't exist, make empty string
+      profile.image = !isEmpty(profile.image) ? profile.image : null;
+      profile.company = !isEmpty(profile.company) ? profile.company : "";
+      profile.website = !isEmpty(profile.website) ? profile.website : "";
+      profile.state = !isEmpty(profile.state) ? profile.state : "";
+      profile.city = !isEmpty(profile.city) ? profile.city : "";
+      profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
+      profile.skills = !isEmpty(profile.skills) ? profile.skills : "";
+      profile.role = !isEmpty(profile.role) ? profile.role : "";
+      profile.social = !isEmpty(profile.social) ? profile.social : "";
+      profile.twitter = !isEmpty(profile.social.twitter)
+        ? profile.social.twitter
+        : "";
+      profile.facebook = !isEmpty(profile.social.facebook)
+        ? profile.social.facebook
+        : "";
+      profile.youtube = !isEmpty(profile.social.youtube)
+        ? profile.social.youtube
+        : "";
+      profile.instagram = !isEmpty(profile.social.instagram)
+        ? profile.social.instagram
+        : "";
+      profile.linkedin = !isEmpty(profile.social.linkedin)
+        ? profile.social.linkedin
+        : "";
+      // Set component fields state
+      this.setState({
+        avatar: profile.avatar,
+        handle: profile.handle,
+        website: profile.website,
+        city: profile.city,
+        state: profile.state,
+        company: profile.company,
+        bio: profile.bio,
+        role: profile.role,
+        skills: profile.skills,
+        twitter: profile.twitter,
+        facebook: profile.facebook,
+        instagram: profile.instagram,
+        linkedin: profile.linkedin,
+        youtube: profile.youtube
+      });
     }
   }
   onSubmit(e) {
@@ -115,23 +167,6 @@ class CreateProfile extends Component {
     data.append("instagram", this.state.instagram);
     data.append("linkedin", this.state.linkedin);
     data.append("youtube", this.state.youtube);
-
-    /*     const profileData = {
-      handle: this.state.handle,
-      image: null,
-      website: this.state.website,
-      city: this.state.city,
-      state: this.state.state,
-      company: this.state.company,
-      bio: this.state.bio,
-      role: this.state.role,
-      skills: this.state.skills,
-      twiter: this.state.twitter,
-      facebook: this.state.facebook,
-      youtube: this.state.youtube,
-      linkedin: this.state.linkedin,
-      instagram: this.state.instagram
-    }; */
 
     this.props.createProfile(data, this.props.history);
   }
@@ -237,8 +272,7 @@ class CreateProfile extends Component {
       <FormCard>
         <Wrapper>
           <form onSubmit={this.onSubmit} enctype="multipart/form-data">
-            <h2>Create Profile</h2>
-            <p>Fill this out to make your profile</p>
+            <h2>Edit Profile</h2>
             <p>* = is required fields</p>
             <FormGroup>
               <TextField
@@ -491,7 +525,9 @@ class CreateProfile extends Component {
 
 CreateProfile.propTypes = {
   profile: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
+  createProfile: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -501,7 +537,7 @@ const mapStateToProps = state => ({
 
 const styledComponent = withStyles(styles)(CreateProfile);
 
-export default connect(mapStateToProps, { createProfile })(
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
   withRouter(styledComponent)
 );
 

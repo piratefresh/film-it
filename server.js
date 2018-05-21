@@ -21,8 +21,8 @@ const app = express();
 // log every request to the console
 app.use(morgan("dev"));
 // Image
-app.use("/uploads", express.static("uploads"));
-app.use(cookieParser());
+app.use(express.static(__dirname + "/public"));
+/* app.use(cookieParser()); */
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
