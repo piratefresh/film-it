@@ -180,20 +180,15 @@ router.post("/", isAuth, upload.single("avatar"), (req, res) => {
 // @route   POST api/profile/profilepic
 // @desc    Add experince to profile
 // @access  Private
-router.post("/profilepic", isAuth, upload.single("image"), (req, res) => {
+router.post("/profilepic", isAuth, upload.single("avatar"), (req, res) => {
   cloudinary.uploader.upload(req.file.path, result => {
-    req.body.image = result.secure_url;
+    req.body.avatar = result.secure_url;
     console.log(result);
-    Profile.findOne({ user: req.user.id }).then(profile => {
-      const newImg = {
-        image: req.body.image
-      };
-
-      // Add to experience array
-      profile.gallery.unshift(newImg);
-      // Save profile
-      profile.save().then(profile => res.json(profile));
-    });
+    Profile.findOneAndUpdate(
+      { user: req.user.id },
+      { $set: { avatar: req.body.avatar } },
+      { new: true }
+    ).then(profile => res.json(profile));
   });
 });
 

@@ -140,7 +140,7 @@ module.exports = router => {
   // route for logging out
   router.get("/auth/logout", (req, res) => {
     req.logout();
-    req.session = null;
+    req.googlesession = null;
     res.redirect("/");
   });
 

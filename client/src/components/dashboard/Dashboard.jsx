@@ -9,6 +9,10 @@ import ProfileActions from "./ProfileActions";
 import Button from "../common/Button";
 import Link from "../common/Link";
 
+const Container = styled.div`
+  margin: 0 auto;
+  width: 1000px;
+`;
 const ContainerDashboard = styled.div`
   height: 100%;
   padding: 5% 5%;
@@ -78,9 +82,11 @@ class Dashboard extends Component {
     }
 
     return (
-      <ContainerDashboard>
-        <DashboardTitle>{dashboardContent}</DashboardTitle>
-      </ContainerDashboard>
+      <Container>
+        <ContainerDashboard>
+          <DashboardTitle>{dashboardContent}</DashboardTitle>
+        </ContainerDashboard>
+      </Container>
     );
   }
 }

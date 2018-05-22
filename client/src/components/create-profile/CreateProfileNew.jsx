@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { createProfile } from "../../actions/profileActions";
 import { withRouter } from "react-router-dom";
-
+// Styled Components
+import Button from "../common/Button";
 //Import Material-UI input field
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core/styles";
@@ -40,12 +41,6 @@ const SmallText = styled.p`
 const SmallSpan = styled.span`
   font-size: 0.6rem;
 `;
-const Button = styled.button`
-  padding: 5px;
-  background: #e2eef0;
-  color: #000;
-  border: none;
-`;
 const SocialWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -71,7 +66,7 @@ class CreateProfile extends Component {
     super(props);
     this.state = {
       displaySocialInputs: false,
-      image: null,
+      avatar: null,
       handle: "",
       website: "",
       state: "",
@@ -91,7 +86,6 @@ class CreateProfile extends Component {
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
@@ -115,23 +109,6 @@ class CreateProfile extends Component {
     data.append("instagram", this.state.instagram);
     data.append("linkedin", this.state.linkedin);
     data.append("youtube", this.state.youtube);
-
-    /*     const profileData = {
-      handle: this.state.handle,
-      image: null,
-      website: this.state.website,
-      city: this.state.city,
-      state: this.state.state,
-      company: this.state.company,
-      bio: this.state.bio,
-      role: this.state.role,
-      skills: this.state.skills,
-      twiter: this.state.twitter,
-      facebook: this.state.facebook,
-      youtube: this.state.youtube,
-      linkedin: this.state.linkedin,
-      instagram: this.state.instagram
-    }; */
 
     this.props.createProfile(data, this.props.history);
   }
@@ -236,7 +213,7 @@ class CreateProfile extends Component {
     return (
       <FormCard>
         <Wrapper>
-          <form onSubmit={this.onSubmit} enctype="multipart/form-data">
+          <form onSubmit={this.onSubmit} encType="multipart/form-data">
             <h2>Create Profile</h2>
             <p>Fill this out to make your profile</p>
             <p>* = is required fields</p>

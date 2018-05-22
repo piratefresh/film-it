@@ -3,7 +3,10 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser, logoutGoogleUser } from "../../../actions/authActions";
-import { clearCurrentProfile } from "../../../actions/profileActions";
+import {
+  clearCurrentProfile,
+  getCurrentProfile
+} from "../../../actions/profileActions";
 //frontend
 import Spinner from "../../common/Spinner";
 
@@ -50,6 +53,9 @@ const NavImg = styled.img`
 `;
 
 class Navbar extends Component {
+  componentDidMount() {
+    this.props.getCurrentProfile();
+  }
   onLogoutClick(e) {
     e.preventDefault();
     this.props.clearCurrentProfile();
@@ -60,7 +66,51 @@ class Navbar extends Component {
   render() {
     const { isAuthenticated } = this.props.auth;
     const { profile, loading } = this.props.profile;
-    const authLinks = (
+
+    let authLinks;
+    if (profile === null || loading) {
+      console.log("Loading profile props");
+    } else {
+      if (Object.keys(profile).length === 0) {
+        console.log("no profile");
+        authLinks = (
+          <NavUl>
+            <NavLink href="/posts">
+              <i className="fas fa-tasks" />View Listings
+            </NavLink>
+            <NavLink href="/dashboard">
+              <i className="fas fa-user-plus" />Dashboard
+            </NavLink>
+            <NavLink
+              href="/auth/logout"
+              onClick={this.onLogoutClick.bind(this)}
+            >
+              <i className="fas fa-sign-in-alt" />Logout
+            </NavLink>
+          </NavUl>
+        );
+      } else {
+        console.log("has profile");
+        authLinks = (
+          <NavUl>
+            <NavLink href="/posts">
+              <i className="fas fa-tasks" />View Listings
+            </NavLink>
+            <NavLink href="/dashboard">
+              <NavImg src={profile.avatar} />Dashboard
+            </NavLink>
+            <NavLink
+              href="/auth/logout"
+              onClick={this.onLogoutClick.bind(this)}
+            >
+              <i className="fas fa-sign-in-alt" />Logout
+            </NavLink>
+          </NavUl>
+        );
+      }
+    }
+
+    /*     const authLinks = (
       <NavUl>
         <NavLink href="/posts">
           <i className="fas fa-tasks" />View Listings
@@ -72,7 +122,7 @@ class Navbar extends Component {
           <i className="fas fa-sign-in-alt" />Logout
         </NavLink>
       </NavUl>
-    );
+    ); */
 
     const guestLinks = (
       <NavUl>
@@ -94,9 +144,7 @@ class Navbar extends Component {
           <NavLink href="/">
             <h2>Film-It</h2>
           </NavLink>
-          {isAuthenticated || Object.keys(profile).length > 0
-            ? authLinks
-            : guestLinks}
+          {isAuthenticated ? authLinks : guestLinks}
         </Navcontent>
       </Nav>
     );
@@ -105,6 +153,7 @@ class Navbar extends Component {
 
 Navbar.propTypes = {
   logoutUser: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
   logoutGoogleUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   profile: PropTypes.object.isRequired
@@ -118,5 +167,6 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   logoutUser,
   logoutGoogleUser,
+  getCurrentProfile,
   clearCurrentProfile
 })(Navbar);

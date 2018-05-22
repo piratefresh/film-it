@@ -28,6 +28,26 @@ Post State =
             email: '',
             phone: '',
 
+
+    const profileData = {
+      handle: this.state.handle,
+      image: null,
+      website: this.state.website,
+      city: this.state.city,
+      state: this.state.state,
+      company: this.state.company,
+      bio: this.state.bio,
+      role: this.state.role,
+      skills: this.state.skills,
+      twiter: this.state.twitter,
+      facebook: this.state.facebook,
+      youtube: this.state.youtube,
+      linkedin: this.state.linkedin,
+      instagram: this.state.instagram
+    };
+
+    regular form
+
 Redux = Make state more predicatable
 Put state into one location instead of spread
 

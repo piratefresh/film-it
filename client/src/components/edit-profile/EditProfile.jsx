@@ -5,7 +5,9 @@ import styled from "styled-components";
 import { createProfile, getCurrentProfile } from "../../actions/profileActions";
 import { withRouter } from "react-router-dom";
 import isEmpty from "../../validation/is-empty";
-
+// Styled Components
+import Button from "../common/Button";
+import Link from "../common/Link";
 //Import Material-UI input field
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core/styles";
@@ -41,12 +43,6 @@ const SmallText = styled.p`
 const SmallSpan = styled.span`
   font-size: 0.6rem;
 `;
-const Button = styled.button`
-  padding: 5px;
-  background: #e2eef0;
-  color: #000;
-  border: none;
-`;
 const SocialWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -72,7 +68,6 @@ class CreateProfile extends Component {
     super(props);
     this.state = {
       displaySocialInputs: false,
-      image: null,
       handle: "",
       website: "",
       state: "",
@@ -106,7 +101,6 @@ class CreateProfile extends Component {
       // Bring skills array back to CSV
       const skillsCSV = profile.skills.join(",");
       // if profile field dosen't exist, make empty string
-      profile.image = !isEmpty(profile.image) ? profile.image : null;
       profile.company = !isEmpty(profile.company) ? profile.company : "";
       profile.website = !isEmpty(profile.website) ? profile.website : "";
       profile.state = !isEmpty(profile.state) ? profile.state : "";
@@ -132,7 +126,6 @@ class CreateProfile extends Component {
         : "";
       // Set component fields state
       this.setState({
-        avatar: profile.avatar,
         handle: profile.handle,
         website: profile.website,
         city: profile.city,
@@ -153,7 +146,6 @@ class CreateProfile extends Component {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("avatar", this.state.avatar);
     data.append("handle", this.state.handle);
     data.append("website", this.state.website);
     data.append("city", this.state.city);
@@ -271,7 +263,7 @@ class CreateProfile extends Component {
     return (
       <FormCard>
         <Wrapper>
-          <form onSubmit={this.onSubmit} enctype="multipart/form-data">
+          <form onSubmit={this.onSubmit} encType="multipart/form-data">
             <h2>Edit Profile</h2>
             <p>* = is required fields</p>
             <FormGroup>
@@ -296,26 +288,9 @@ class CreateProfile extends Component {
                 required
               />
               <SmallText>A unique handle for your profile URL.</SmallText>
-              <TextField
-                id="avatar"
-                label="Profile Picture"
-                margin="normal"
-                name="avatar"
-                type="file"
-                onChange={this.fileSelectedHandler}
-                fullWidth={true}
-                FormHelperTextProps={{
-                  classes: {
-                    root: classes.label
-                  }
-                }}
-                InputProps={{
-                  classes: {
-                    underline: classes.underline
-                  }
-                }}
-                required
-              />
+              <Link href="profile-picture">
+                <Button type="button">Change profile picture</Button>
+              </Link>
               <TextField
                 id="city"
                 label="City"

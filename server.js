@@ -38,6 +38,7 @@ mongoose
 // Sets cookie with the unqiue google id
 app.use(
   cookieSession({
+    name: "googlesession",
     maxAge: 30 * 24 * 60 * 60 * 1000,
     keys: [keys.cookieKey]
   })

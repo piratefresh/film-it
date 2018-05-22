@@ -58,7 +58,10 @@ const ProfileSchema = new Schema({
         type: String,
         required: true
       },
-      location: {
+      city: {
+        type: String
+      },
+      state: {
         type: String
       },
       from: {

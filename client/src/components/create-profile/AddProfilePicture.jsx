@@ -2,8 +2,13 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { addProfilePicture } from "../../actions/profileActions";
+import {
+  addProfilePicture,
+  getCurrentProfile
+} from "../../actions/profileActions";
 import { withRouter } from "react-router-dom";
+// Styled Components
+import Button from "../common/Button";
 //Import Material-UI input field
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core/styles";
@@ -31,12 +36,6 @@ const Wrapper = styled.div`
 const SmallText = styled.p`
   font-size: 0.6rem;
 `;
-const Button = styled.button`
-  padding: 5px;
-  background: #e2eef0;
-  color: #000;
-  border: none;
-`;
 
 const styles = {
   root: {
@@ -57,7 +56,7 @@ class AddProfilePic extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      image: null,
+      avatar: null,
       errors: {}
     };
 
@@ -70,9 +69,13 @@ class AddProfilePic extends Component {
     }
   }
 
+  componentDidMount() {
+    this.props.getCurrentProfile();
+  }
+
   fileSelectedHandler = e => {
     this.setState({
-      image: e.target.files[0]
+      avatar: e.target.files[0]
     });
   };
 
@@ -80,7 +83,7 @@ class AddProfilePic extends Component {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("image", this.state.image);
+    data.append("avatar", this.state.avatar);
 
     this.props.addProfilePicture(data, this.props.history);
   }
@@ -91,16 +94,16 @@ class AddProfilePic extends Component {
     return (
       <FormCard>
         <Wrapper>
-          <form onSubmit={this.onSubmit} enctype="multipart/form-data">
+          <form onSubmit={this.onSubmit} encType="multipart/form-data">
             <h2>Create Profile</h2>
             <p>Fill this out to make your profile</p>
             <p>* = is required fields</p>
             <FormGroup>
               <TextField
-                id="image"
+                id="avatar"
                 label="Profile Picture"
                 margin="normal"
-                name="image"
+                name="avatar"
                 type="file"
                 onChange={this.fileSelectedHandler}
                 fullWidth={true}
@@ -149,9 +152,10 @@ const mapStateToProps = state => ({
 
 const styledComponent = withStyles(styles)(AddProfilePic);
 
-export default connect(mapStateToProps, { addProfilePicture })(
-  withRouter(styledComponent)
-);
+export default connect(mapStateToProps, {
+  addProfilePicture,
+  getCurrentProfile
+})(withRouter(styledComponent));
 
 /* export default withStyles(styles)connect(mapStateToProps, { createProfile })(
   withRouter(CreateProfile)
