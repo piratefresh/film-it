@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getCurrentProfile, deleteAccount } from "../../actions/profileActions";
-import { fetchUser } from "../../actions/authActions";
-import Spinner from "../common/Spinner";
+import { getCurrentProfile, deleteAccount } from "../actions/profileActions";
+import Spinner from "./common/Spinner";
 import styled from "styled-components";
-import ProfileActions from "./ProfileActions";
+import ProfileActions from "./dashboard/ProfileActions";
 // Styled Components
-import Button from "../common/Button";
-import Link from "../common/Link";
+import Button from "./common/Button";
+import Link from "./common/Link";
 
 const Container = styled.div`
   margin: 0 auto;
@@ -104,8 +103,6 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, {
-  getCurrentProfile,
-  deleteAccount,
-  fetchUser
-})(Dashboard);
+export default connect(mapStateToProps, { getCurrentProfile, deleteAccount })(
+  Dashboard
+);

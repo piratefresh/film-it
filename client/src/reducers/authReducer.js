@@ -21,8 +21,7 @@ export default function(state = initialState, action) {
     case FETCH_GOOGLE_USER:
       return {
         ...state,
-        isAuthenticated: !isEmpty(action.payload),
-        user: action.payload
+        isAuthenticated: true
       };
     case LOGOUT_GOOGLE_USER:
       return {

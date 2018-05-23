@@ -101,7 +101,6 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchUser();
     if (this.props.auth.isAuthenticated) {
       this.props.history.push("/dashboard");
     }
@@ -139,7 +138,7 @@ class Login extends Component {
           <h1>Login</h1>
           <Link href="/auth/google">
             <GoogleSignIn>
-              <GoogleIcon src={GoogleSvg} alt="Google Button" />
+              <GoogleIcon src={GoogleSvg} alt="Google Button" type="button" />
               <GoogleBtnText>Sign in with Google</GoogleBtnText>
             </GoogleSignIn>
           </Link>

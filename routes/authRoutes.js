@@ -111,8 +111,25 @@ module.exports = router => {
   // the callback after google has authenticated the user
   router.get(
     "/auth/google/callback",
-    passport.authenticate("google", { failureRedirect: "/" }),
+    passport.authenticate("google", {
+      failureRedirect: "/"
+    }),
     (req, res) => {
+      console.log(req.user);
+      // User Matched
+      const payload = {
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email
+      }; // Create JWT Payload
+
+      // Sign Token
+      const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
+      /*  res.cookie("jwtToken", token); */
+
+      /*       res.redirect("/dashboard"); */
+      console.log("Bearer " + token);
+      res.cookie("jwtToken", token);
       res.redirect("/dashboard");
     }
   );

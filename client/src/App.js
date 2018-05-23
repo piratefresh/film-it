@@ -1,14 +1,17 @@
 import React, { Component } from "react";
-import { Provider } from "react-redux";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import PrivateRoute from "./components/common/PrivateRoute";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 //Redux
 import { setCurrentUser, logoutUser, fetchUser } from "./actions/authActions";
-import { clearCurrentProfile } from "./actions/profileActions";
+import {
+  clearCurrentProfile,
+  getCurrentProfile
+} from "./actions/profileActions";
 import store from "./store";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 //Components
 import Navbar from "./components/layout/Nav/Navbar";
 import Landing from "./components/layout/Landing";
@@ -30,6 +33,10 @@ const Wrapper = styled.div`
   background-image: url(${bgPattern});
 `;
 
+//LOGGED IN CHECKS
+const auth = {
+  isAuthenticated: false
+};
 // Check for token
 if (localStorage.jwtToken) {
   // Set auth token header auth
@@ -53,41 +60,52 @@ if (localStorage.jwtToken) {
   store.dispatch(fetchUser());
 }
 
+const NoMatch = ({ location }) => (
+  <h1 className="text-center">Four oh Four.</h1>
+);
+
 class App extends Component {
   render() {
     return (
-      <Provider store={store}>
-        <BrowserRouter>
-          <div className="App">
-            <Wrapper>
-              <Navbar />
+      <BrowserRouter>
+        <div className="App">
+          <Wrapper>
+            <Navbar />
+            <Switch>
               <Route exact path="/" component={Landing} />
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
+
+              <PrivateRoute exact path="/dashboard" component={Dashboard} />
               <Switch>
-                <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <Route
+                <PrivateRoute
                   exact
                   path="/create-profile"
                   component={CreateProfileNew}
                 />
-                <Route exact path="/edit-profile" component={EditProfile} />
-                <Route
-                  exact
-                  path="/profile-picture"
-                  component={EditProfilePicture}
-                />
-                <Route exact path="/add-experience" component={AddExperience} />
               </Switch>
-              <Footer>
-                <p>Film-It &copy; {new Date().getFullYear()}</p>
-              </Footer>
-            </Wrapper>
-          </div>
-        </BrowserRouter>
-      </Provider>
+              <Route exact path="/edit-profile" component={EditProfile} />
+              <Route
+                exact
+                path="/profile-picture"
+                component={EditProfilePicture}
+              />
+              <Route exact path="/add-experience" component={AddExperience} />
+              <Route component={NoMatch} />
+            </Switch>
+            <Footer>
+              <p>Film-It &copy; {new Date().getFullYear()}</p>
+            </Footer>
+          </Wrapper>
+        </div>
+      </BrowserRouter>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  auth: state.auth,
+  profile: state.profile
+});
+
+export default connect(mapStateToProps, { getCurrentProfile })(App);

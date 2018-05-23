@@ -7,6 +7,8 @@ import {
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
+import getCookie from "../components/common/CheckCookie";
+import deleteCookie from "../components/common/DeleteCookie";
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
@@ -73,23 +75,22 @@ export const logoutUser = () => dispatch => {
 }; */
 
 /* Google Login */
-export const fetchUser = () => dispatch => {
-  axios
-    .get("/api/users/current")
-    .then(res => {
-      dispatch({ type: FETCH_GOOGLE_USER, payload: res.data });
-    })
-    .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
-    );
+export const fetchUser = () => async dispatch => {
+  const res = await axios.get("/api/users/current");
+
+  try {
+    dispatch({ type: SET_CURRENT_USER, payload: res.data });
+  } catch (err) {
+    dispatch({
+      type: GET_ERRORS,
+      payload: err.response.data
+    });
+  }
 };
 
 export const logoutGoogleUser = () => async dispatch => {
   await axios.get("/auth/logout");
-
+  deleteCookie("jwtToken");
   const emptyState = {};
 
   dispatch({ type: LOGOUT_GOOGLE_USER, payload: emptyState });
