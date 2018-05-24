@@ -38,7 +38,7 @@ router.get(
 // @desc    Return current user
 // @access  Private
 router.get("/current", (req, res) => {
-  res.json(req.user);
+  res.send(req.user);
 });
 
 module.exports = router;

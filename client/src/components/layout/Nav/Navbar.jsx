@@ -69,10 +69,8 @@ class Navbar extends Component {
 
     let authLinks;
     if (profile === null || loading) {
-      console.log("Loading profile props");
     } else {
       if (Object.keys(profile).length === 0) {
-        console.log("no profile");
         authLinks = (
           <NavUl>
             <NavLink href="/posts">
@@ -90,7 +88,6 @@ class Navbar extends Component {
           </NavUl>
         );
       } else {
-        console.log("has profile");
         authLinks = (
           <NavUl>
             <NavLink href="/posts">

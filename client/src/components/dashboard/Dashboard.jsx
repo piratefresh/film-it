@@ -9,6 +9,7 @@ import ProfileActions from "./ProfileActions";
 // Styled Components
 import Button from "../common/Button";
 import Link from "../common/Link";
+import Experience from "./Experience";
 
 const Container = styled.div`
   margin: 0 auto;
@@ -59,6 +60,7 @@ class Dashboard extends Component {
               <Link href={`/profile/${profile.handle}`}> {user.name} </Link>{" "}
             </p>
             <ProfileActions />
+            <Experience experience={profile.experience} />
             <div style={{ marginBottom: "60px" }}>
               <Link>
                 <Button onClick={this.onDeleteClick.bind(this)}>

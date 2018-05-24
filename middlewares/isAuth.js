@@ -10,6 +10,7 @@ module.exports = (req, res, next) => {
       res.status(401).json({ authenticated: false, message: "Login expired." });
     })(req, res, next);
   } else {
+    console.log(req.isAuthenticated());
     if (req.isAuthenticated()) return next();
     res.status(401).json({ authenticated: false });
     console.log("authenticated false");

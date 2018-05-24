@@ -4,7 +4,12 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 //Redux
-import { setCurrentUser, logoutUser, fetchUser } from "./actions/authActions";
+import {
+  setCurrentUser,
+  logoutUser,
+  fetchUser,
+  loginGoogleUser
+} from "./actions/authActions";
 import {
   clearCurrentProfile,
   getCurrentProfile
@@ -27,6 +32,7 @@ import "./App.css";
 import bgPattern from "./img/svg/topography.svg";
 //Styled Components
 import styled from "styled-components";
+import getCookie from "./components/common/CheckCookie";
 
 const Wrapper = styled.div`
   background-color: #f9f9f9;
@@ -57,7 +63,9 @@ if (localStorage.jwtToken) {
     window.location.href = "/login";
   }
 } else {
-  store.dispatch(fetchUser());
+  if (getCookie("jwtToken")) {
+    store.dispatch(loginGoogleUser());
+  }
 }
 
 const NoMatch = ({ location }) => (
@@ -77,20 +85,26 @@ class App extends Component {
               <Route exact path="/login" component={Login} />
 
               <PrivateRoute exact path="/dashboard" component={Dashboard} />
-              <Switch>
-                <PrivateRoute
-                  exact
-                  path="/create-profile"
-                  component={CreateProfileNew}
-                />
-              </Switch>
-              <Route exact path="/edit-profile" component={EditProfile} />
-              <Route
+              <PrivateRoute
+                exact
+                path="/create-profile"
+                component={CreateProfileNew}
+              />
+              <PrivateRoute
+                exact
+                path="/edit-profile"
+                component={EditProfile}
+              />
+              <PrivateRoute
                 exact
                 path="/profile-picture"
                 component={EditProfilePicture}
               />
-              <Route exact path="/add-experience" component={AddExperience} />
+              <PrivateRoute
+                exact
+                path="/add-experience"
+                component={AddExperience}
+              />
               <Route component={NoMatch} />
             </Switch>
             <Footer>

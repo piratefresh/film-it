@@ -61,6 +61,7 @@ export const logoutUser = () => dispatch => {
   window.location.replace("/auth/logout");
   // Remove token from localStorage
   localStorage.removeItem("jwtToken");
+  deleteCookie("jwtToken");
   // Remove auth header for future requests
   setAuthToken(false);
   // Set current user to {} which will set isAuthenticated to false
@@ -77,7 +78,7 @@ export const logoutUser = () => dispatch => {
 /* Google Login */
 export const fetchUser = () => async dispatch => {
   const res = await axios.get("/api/users/current");
-
+  console.log(res);
   try {
     dispatch({ type: SET_CURRENT_USER, payload: res.data });
   } catch (err) {
@@ -86,6 +87,17 @@ export const fetchUser = () => async dispatch => {
       payload: err.response.data
     });
   }
+};
+
+export const loginGoogleUser = () => dispatch => {
+  // Get Cookie JWTTOKEN
+  const token = getCookie("jwtToken");
+  // Set token to Auth Header
+  setAuthToken(token);
+  // Decode token to get user data
+  const decoded = jwt_decode(token);
+  // Set current user
+  dispatch(setCurrentUser(decoded));
 };
 
 export const logoutGoogleUser = () => async dispatch => {

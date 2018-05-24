@@ -124,11 +124,10 @@ module.exports = router => {
       }; // Create JWT Payload
 
       // Sign Token
-      const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
-      /*  res.cookie("jwtToken", token); */
+      let token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
 
-      /*       res.redirect("/dashboard"); */
-      console.log("Bearer " + token);
+      token = "Bearer " + token;
+      console.log(token);
       res.cookie("jwtToken", token);
       res.redirect("/dashboard");
     }
