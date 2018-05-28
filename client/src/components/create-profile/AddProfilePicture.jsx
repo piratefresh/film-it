@@ -119,7 +119,7 @@ class AddProfilePic extends Component {
                 }}
                 required
               />
-              <SmallText>A unique handle for your profile URL.</SmallText>
+              <SmallText>Change Your Profile Picture.</SmallText>
             </FormGroup>
             <Button
               type="submit"

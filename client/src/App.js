@@ -25,10 +25,16 @@ import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
 import CreateProfileNew from "./components/create-profile/CreateProfileNew";
 import EditProfile from "./components/edit-profile/EditProfile";
+import EditGalleryPictures from "./components/edit-profile/EditProfileGallery";
 import EditProfilePicture from "./components/create-profile/AddProfilePicture";
 import AddExperience from "./components/add-credentials/AddExperience";
+import Profiles from "./components/profiles/Profiles";
+import Profile from "./components/profile/Profile";
+import Posts from "./components/post/Posts";
+import PostForm from "./components/post/PostForm";
 import Login from "./components/auth/Login";
 import "./App.css";
+import "normalize.css";
 import bgPattern from "./img/svg/topography.svg";
 //Styled Components
 import styled from "styled-components";
@@ -37,6 +43,11 @@ import getCookie from "./components/common/CheckCookie";
 const Wrapper = styled.div`
   background-color: #f9f9f9;
   background-image: url(${bgPattern});
+`;
+const Container = styled.div`
+  margin: 5% auto;
+  width: 1000px;
+  height: 100%;
 `;
 
 //LOGGED IN CHECKS
@@ -69,7 +80,10 @@ if (localStorage.jwtToken) {
 }
 
 const NoMatch = ({ location }) => (
-  <h1 className="text-center">Four oh Four.</h1>
+  <div>
+    <h1 className="text-center">Four oh Four.</h1>
+    <p>Sorry page dosen't exist</p>
+  </div>
 );
 
 class App extends Component {
@@ -79,34 +93,44 @@ class App extends Component {
         <div className="App">
           <Wrapper>
             <Navbar />
-            <Switch>
-              <Route exact path="/" component={Landing} />
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/login" component={Login} />
-
-              <PrivateRoute exact path="/dashboard" component={Dashboard} />
-              <PrivateRoute
-                exact
-                path="/create-profile"
-                component={CreateProfileNew}
-              />
-              <PrivateRoute
-                exact
-                path="/edit-profile"
-                component={EditProfile}
-              />
-              <PrivateRoute
-                exact
-                path="/profile-picture"
-                component={EditProfilePicture}
-              />
-              <PrivateRoute
-                exact
-                path="/add-experience"
-                component={AddExperience}
-              />
-              <Route component={NoMatch} />
-            </Switch>
+            <Container>
+              <Switch>
+                <Route exact path="/" component={Landing} />
+                <Route exact path="/register" component={Register} />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/profiles" component={Profiles} />
+                <Route exact path="/profile/:handle" component={Profile} />
+                <Route exact path="/feed" component={Posts} />
+                <PrivateRoute exact path="/dashboard" component={Dashboard} />
+                <PrivateRoute
+                  exact
+                  path="/create-profile"
+                  component={CreateProfileNew}
+                />
+                <PrivateRoute
+                  exact
+                  path="/edit-profile"
+                  component={EditProfile}
+                />
+                <PrivateRoute
+                  exact
+                  path="/profile-picture"
+                  component={EditProfilePicture}
+                />
+                <PrivateRoute
+                  exact
+                  path="/add-experience"
+                  component={AddExperience}
+                />
+                <PrivateRoute
+                  exact
+                  path="/profile-gallery"
+                  component={EditGalleryPictures}
+                />
+                <PrivateRoute exact path="/add-post" component={PostForm} />
+                <Route component={NoMatch} />
+              </Switch>
+            </Container>
             <Footer>
               <p>Film-It &copy; {new Date().getFullYear()}</p>
             </Footer>

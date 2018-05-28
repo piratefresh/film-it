@@ -73,8 +73,11 @@ class Navbar extends Component {
       if (Object.keys(profile).length === 0) {
         authLinks = (
           <NavUl>
-            <NavLink href="/posts">
-              <i className="fas fa-tasks" />View Listings
+            <NavLink href="/feed">
+              <i className="fas fa-tasks" />View Posts
+            </NavLink>
+            <NavLink href="/profiles">
+              <i class="fas fa-users" />Profiles
             </NavLink>
             <NavLink href="/dashboard">
               <i className="fas fa-user-plus" />Dashboard
@@ -90,8 +93,11 @@ class Navbar extends Component {
       } else {
         authLinks = (
           <NavUl>
-            <NavLink href="/posts">
-              <i className="fas fa-tasks" />View Listings
+            <NavLink href="/feed">
+              <i className="fas fa-tasks" />View Posts
+            </NavLink>
+            <NavLink href="/profiles">
+              <i class="fas fa-users" />Profiles
             </NavLink>
             <NavLink href="/dashboard">
               <NavImg src={profile.avatar} />Dashboard
@@ -123,8 +129,11 @@ class Navbar extends Component {
 
     const guestLinks = (
       <NavUl>
-        <NavLink href="/posts">
-          <i className="fas fa-tasks" />View Listings
+        <NavLink href="/feed">
+          <i className="fas fa-tasks" />View Posts
+        </NavLink>
+        <NavLink href="/profiles">
+          <i class="fas fa-users" />Profiles
         </NavLink>
         <NavLink href="/register">
           <i className="fas fa-user-plus" />Sign Up

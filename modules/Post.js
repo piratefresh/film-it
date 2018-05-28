@@ -7,29 +7,52 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "user"
   },
+  avatar: {
+    type: String,
+    required: true
+  },
   name: {
+    type: String,
+    required: true
+  },
+  image: {
     type: String
   },
-  avatar: {
+  image_id: {
     type: String
   },
   title: {
     type: String,
     required: true
   },
-  text: {
+  desc: {
     type: String,
     required: true
   },
-  genre: {
+  tags: {
     type: [String],
     trim: true
   },
-  pay: {
+  seeking: {
+    type: String,
+    trim: true,
+    required: true
+  },
+  budget: {
+    type: String
+  },
+  state: {
     type: String,
     required: true
   },
-  photo: String,
+  city: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  },
   likes: [
     {
       user: {
@@ -59,22 +82,7 @@ const PostSchema = new Schema({
         default: Date.now
       }
     }
-  ],
-  number: {
-    type: String
-  },
-  email: {
-    type: String,
-    required: true
-  },
-  location: {
-    type: String,
-    default: "Point"
-  },
-  date: {
-    type: Date,
-    default: Date.now
-  }
+  ]
 });
 
 module.exports = Post = mongoose.model("post", PostSchema);

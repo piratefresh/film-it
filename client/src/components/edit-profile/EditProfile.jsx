@@ -75,6 +75,7 @@ class CreateProfile extends Component {
       company: "",
       bio: "",
       role: "",
+      reel: "",
       skills: "",
       twitter: "",
       facebook: "",
@@ -105,6 +106,7 @@ class CreateProfile extends Component {
       profile.website = !isEmpty(profile.website) ? profile.website : "";
       profile.state = !isEmpty(profile.state) ? profile.state : "";
       profile.city = !isEmpty(profile.city) ? profile.city : "";
+      profile.reel = !isEmpty(profile.reel) ? profile.reel : "";
       profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
       profile.skills = !isEmpty(profile.skills) ? profile.skills : "";
       profile.role = !isEmpty(profile.role) ? profile.role : "";
@@ -165,12 +167,6 @@ class CreateProfile extends Component {
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
-  fileSelectedHandler = e => {
-    this.setState({
-      avatar: e.target.files[0]
-    });
-    console.log(this.state.avatar);
-  };
 
   render() {
     const { errors, displaySocialInputs } = this.state;

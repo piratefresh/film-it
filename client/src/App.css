@@ -1,33 +1,38 @@
-/* .App {
-  text-align: center;
+* {
+  padding: 0;
+  margin: 0;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+/* .container-dashboard {
+  height: 100%;
+  padding: 5% 5%;
+  background: #fff;
+  margin-top: 5%;
+  display: grid;
+  grid-template-areas:
+    "title title title"
+    "details posts posts"
+    "exp exp exp"
+    "reel reel reel";
+  border-radius: 10px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.container-dashboard .dashboard-title {
+  grid-area: title;
+  margin-bottom: 5%;
 }
 
-.App-title {
-  font-size: 1.5em;
+.container-dashboard .dashboard-details {
+  grid-area: details;
 }
-
-.App-intro {
-  font-size: large;
+.container-dashboard .post-history {
+  grid-area: posts;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.container-dashboard .user-experience {
+  grid-area: exp;
+}
+.container-dashboard .user-reel {
+  grid-area: reel;
 }
  */

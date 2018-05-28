@@ -84,7 +84,7 @@ router.get("/handle/:handle", (req, res) => {
   const errors = {};
 
   Profile.findOne({ handle: req.params.handle })
-    .populate("user", ["name", "avatar"])
+    .populate("user", "name")
     .then(profile => {
       if (!profile) {
         errors.noprofile = "There is no profile for this user";
@@ -192,6 +192,37 @@ router.post("/profilepic", isAuth, upload.single("avatar"), (req, res) => {
   });
 });
 
+// @route   POST api/profile/profile-gallery
+// @desc    Add images to profile
+// @access  Private
+router.post("/profile-gallery", isAuth, upload.single("image"), (req, res) => {
+  cloudinary.uploader.upload(req.file.path, result => {
+    req.body.image = result.secure_url;
+    req.body.image_id = result.public_id;
+    console.log(result);
+    Profile.findOne({ user: req.user.id }).then(profile => {
+      const newImg = {
+        image: req.body.image,
+        image_id: req.body.image_id
+      };
+      // Add to experience array
+      profile.gallery.unshift(newImg);
+      // Save profile
+      profile.save().then(profile => res.json(profile));
+    });
+  });
+});
+
+//WIP
+// @route   POST api/profile/profile-gallery/delete
+// @desc    Add images to profile
+// @access  Private
+router.post("/profile-gallery/delete", isAuth, (req, res) => {
+  cloudinary.v2.uploader.destroy(id, function(error, result) {
+    console.log(result);
+  });
+});
+
 // @route   POST api/profile/experience
 // @desc    Add experince to profile
 // @access  Private
@@ -214,8 +245,7 @@ router.post("/experience", isAuth, (req, res) => {
       current: req.body.current,
       description: req.body.description
     };
-
-    // Add to experience array
+    // Add to Gallery array
     profile.experience.unshift(newExp);
     // Save profile
     profile.save().then(profile => res.json(profile));
@@ -250,6 +280,24 @@ router.post("/education", isAuth, (req, res) => {
     // Save profile
     profile.save().then(profile => res.json(profile));
   });
+});
+
+// @route   DELETE api/profile/gallery/:image_id
+// @desc    Delete gallery of profile
+// @access  Private
+router.delete("/gallery/:image_id", isAuth, (req, res) => {
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      // Get remove index
+      const removeIndex = profile.gallery
+        .map(item => item.id)
+        .indexOf(req.params.image_id);
+      // Splice out of array
+      profile.gallery.splice(removeIndex, 1);
+      // Save
+      profile.save().then(profile => res.json(profile));
+    })
+    .catch(err => res.status(404).json(err));
 });
 
 // @route   DELETE api/profile/experience/:exp_id

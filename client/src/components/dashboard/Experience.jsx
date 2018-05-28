@@ -6,21 +6,29 @@ import { deleteExperience } from "../../actions/profileActions";
 // Styled Components
 import styled from "styled-components";
 import Button from "../common/Button";
+import Link from "../common/Link";
 //Style Dates
 import Moment from "react-moment";
 
-const UserExperience = styled.div`
-  grid-area: exp;
-  padding: 5% 0;
+const UserExperienceContainer = styled.div`
+  margin: 3% 0;
 `;
-const ExperienceDetails = styled.div``;
+const ExperienceDetails = styled.div`
+  background: #e2eef0;
+  padding: 2% 2%;
+  margin: 3% 0;
+`;
 const ExperienceTitle = styled.div`
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 `;
 const ExperienceJobTitle = styled.div`
   color: #333;
+  font-size: 0.6rem;
 `;
-const ExperienceShorten = styled.div``;
+const ExperienceShorten = styled.div`
+  font-size: 0.8rem;
+  padding: 2% 0;
+`;
 
 class Experience extends Component {
   onDeleteClick(id) {
@@ -30,13 +38,13 @@ class Experience extends Component {
   render() {
     const experience = this.props.experience.map(exp => (
       <ExperienceDetails key={exp._id}>
-        <ExperienceTitle />
-        <ExperienceJobTitle>
+        <ExperienceTitle>
+          {" "}
           <p>
             {exp.title} @
             {exp.company}
           </p>
-        </ExperienceJobTitle>
+        </ExperienceTitle>
         <ExperienceJobTitle>
           <Moment format="YYYY/MM/DD">{exp.from}</Moment> -{" "}
           {exp.to === null ? (
@@ -50,17 +58,28 @@ class Experience extends Component {
         </ExperienceShorten>
         <Button
           onClick={this.onDeleteClick.bind(this, exp._id)}
-          style={{ background: "#fd381e" }}
+          style={{ background: "#fd381e", fontSize: "0.6rem" }}
         >
           Delete
         </Button>
       </ExperienceDetails>
     ));
     return (
-      <div>
-        <h4>User Experience</h4>
+      <UserExperienceContainer>
+        <h4
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignContent: "center"
+          }}
+        >
+          User Experience
+        </h4>
         {experience}
-      </div>
+        <Link href="add-experience">
+          <Button>Add Experience</Button>
+        </Link>
+      </UserExperienceContainer>
     );
   }
 }

@@ -92,6 +92,7 @@ class CreateProfile extends Component {
       company: "",
       bio: "",
       role: "",
+      reel: "",
       skills: "",
       twiter: "",
       facebook: "",
@@ -122,6 +123,7 @@ class CreateProfile extends Component {
       phone: this.state.phone,
       company: this.state.company,
       bio: this.state.bio,
+      reel: this.state.reel,
       role: this.state.role,
       skills: this.state.skills,
       twiter: this.state.twitter,
@@ -387,7 +389,7 @@ class CreateProfile extends Component {
                 onChange={this.onChange}
                 floatingLabelText="Reel URL"
               />
-              <SmallText>Link to your Video reel</SmallText>
+              <SmallText>Link to your reel</SmallText>
               <TextField
                 underlineStyle={{
                   borderBottom: "3px solid #7d48df"

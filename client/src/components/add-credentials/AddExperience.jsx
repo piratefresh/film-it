@@ -150,6 +150,45 @@ class AddExperience extends Component {
                 }
               }}
             />
+            <h6>Location: </h6>
+            <TextField
+              id="city"
+              label="City"
+              margin="normal"
+              name="city"
+              value={this.state.city}
+              onChange={this.onChange}
+              fullWidth={true}
+              FormHelperTextProps={{
+                classes: {
+                  root: classes.label
+                }
+              }}
+              InputProps={{
+                classes: {
+                  underline: classes.underline
+                }
+              }}
+            />
+            <TextField
+              id="state"
+              label="State"
+              margin="normal"
+              name="state"
+              value={this.state.state}
+              onChange={this.onChange}
+              fullWidth={true}
+              FormHelperTextProps={{
+                classes: {
+                  root: classes.label
+                }
+              }}
+              InputProps={{
+                classes: {
+                  underline: classes.underline
+                }
+              }}
+            />
             <TextField
               id="from"
               label="From"

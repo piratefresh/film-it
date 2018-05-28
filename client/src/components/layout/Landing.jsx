@@ -5,11 +5,6 @@ import TopBar from "./TopBar";
 import SearchBar from "./SearchBar";
 import JobList from "./JobList";
 
-const Container = styled.div`
-  margin: 0 auto;
-  width: 1000px;
-`;
-
 const Title = styled.h3`
   margin: 5% 0;
   text-transform: uppercase;
@@ -22,12 +17,12 @@ const Title = styled.h3`
 class Landing extends Component {
   render() {
     return (
-      <Container>
+      <div>
         <Title>Postings</Title>
         <TopBar />
         <SearchBar />
         <JobList />
-      </Container>
+      </div>
     );
   }
 }
