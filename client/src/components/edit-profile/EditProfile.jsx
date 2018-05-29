@@ -108,7 +108,6 @@ class CreateProfile extends Component {
       profile.city = !isEmpty(profile.city) ? profile.city : "";
       profile.reel = !isEmpty(profile.reel) ? profile.reel : "";
       profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
-      profile.skills = !isEmpty(profile.skills) ? profile.skills : "";
       profile.role = !isEmpty(profile.role) ? profile.role : "";
       profile.social = !isEmpty(profile.social) ? profile.social : "";
       profile.twitter = !isEmpty(profile.social.twitter)
@@ -135,7 +134,7 @@ class CreateProfile extends Component {
         company: profile.company,
         bio: profile.bio,
         role: profile.role,
-        skills: profile.skills,
+        skills: skillsCSV,
         twitter: profile.twitter,
         facebook: profile.facebook,
         instagram: profile.instagram,

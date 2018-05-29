@@ -30,9 +30,12 @@ import EditProfilePicture from "./components/create-profile/AddProfilePicture";
 import AddExperience from "./components/add-credentials/AddExperience";
 import Profiles from "./components/profiles/Profiles";
 import Profile from "./components/profile/Profile";
-import Posts from "./components/post/Posts";
-import PostForm from "./components/post/PostForm";
+import Posts from "./components/posts/Posts";
+import PostForm from "./components/posts/PostForm";
+import EditPostForm from "./components/posts/EditPostForm";
+import Post from "./components/post/Post";
 import Login from "./components/auth/Login";
+// Styling
 import "./App.css";
 import "normalize.css";
 import bgPattern from "./img/svg/topography.svg";
@@ -76,6 +79,19 @@ if (localStorage.jwtToken) {
 } else {
   if (getCookie("jwtToken")) {
     store.dispatch(loginGoogleUser());
+    // Decode token and get user info and exp
+    const decoded = jwt_decode(getCookie("jwtToken"));
+    store.dispatch(setCurrentUser(decoded));
+    // Check for expired token
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp < currentTime) {
+      // Logout user
+      store.dispatch(logoutUser());
+      // Clear current Profile
+      store.dispatch(clearCurrentProfile());
+      // Redirect to login
+      window.location.href = "/login";
+    }
   }
 }
 
@@ -126,6 +142,12 @@ class App extends Component {
                   exact
                   path="/profile-gallery"
                   component={EditGalleryPictures}
+                />
+                <PrivateRoute exact path="/post/:id" component={Post} />
+                <PrivateRoute
+                  exact
+                  path="/edit-post/:id"
+                  component={EditPostForm}
                 />
                 <PrivateRoute exact path="/add-post" component={PostForm} />
                 <Route component={NoMatch} />

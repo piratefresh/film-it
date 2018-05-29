@@ -20,7 +20,7 @@ const Navcontent = styled.div`
   margin: 0 200px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
 
   > h2 {
     padding: 0;

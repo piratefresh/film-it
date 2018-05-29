@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getCurrentProfile, deleteAccount } from "../../actions/profileActions";
+import { getPostsById } from "../../actions/postActions";
 import { fetchUser } from "../../actions/authActions";
 import Spinner from "../common/Spinner";
 import styled from "styled-components";
 import ProfileActions from "./ProfileActions";
+import PostHistoryItem from "./PostHistoryItem";
 // Styled Components
 import Button from "../common/Button";
 import Link from "../common/Link";
@@ -54,6 +56,7 @@ const DashboardReel = styled.div`
 class Dashboard extends Component {
   componentDidMount() {
     this.props.getCurrentProfile();
+    this.props.getPostsById(this.props.auth.user.id);
   }
 
   onDeleteClick(e) {
@@ -63,6 +66,12 @@ class Dashboard extends Component {
   render() {
     const { user } = this.props.auth;
     const { profile, loading } = this.props.profile;
+    const { posts } = this.props.post;
+    // Post Map
+    const postContent = posts.map(post => (
+      <PostHistoryItem key={post._id} post={post} />
+    ));
+
     let dashboardContent;
     if (profile === null || loading) {
       dashboardContent = <Spinner />;
@@ -103,49 +112,7 @@ class Dashboard extends Component {
                 experience={profile.experience}
               />
             </DashboardDetails>
-            <PostHistory>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum
-              repellat voluptate saepe, quisquam quae voluptates enim eveniet
-              totam laudantium, quibusdam tempora ipsa eos repudiandae
-              distinctio? Officiis perferendis sequi debitis ducimus
-              consequuntur quam deleniti ipsa excepturi iusto laudantium. Quo
-              officiis tenetur nobis culpa expedita provident ipsam non vero
-              nisi eaque eos necessitatibus, numquam doloribus magni iure
-              ducimus esse harum, omnis quos maxime placeat quas! Assumenda
-              ducimus distinctio maxime amet possimus quibusdam autem animi
-              dolorum voluptas deleniti, repellendus qui earum culpa, ut,
-              reiciendis hic nihil! Praesentium animi repellat officia in
-              dolorem quos? Est cupiditate explicabo consequuntur quibusdam
-              aliquid voluptates facilis nihil nam aliquam, dolore porro at
-              velit vel ex vitae sint id, perferendis molestiae placeat
-              voluptatem officia quod consequatur officiis. Expedita ducimus vel
-              delectus odio sequi eaque consequatur praesentium, sit
-              necessitatibus nobis ipsam maiores velit, repellendus, magni
-              repellat voluptatum quis facere alias minima reiciendis error
-              harum nulla ipsum. Earum veritatis eum quos quia unde velit
-              inventore suscipit iusto id odio aliquam amet consequatur sapiente
-              quam fugit cupiditate, incidunt culpa fugiat rerum pariatur
-              consectetur veniam, molestiae tempore? Alias, tempora nam
-              aspernatur aut ex officia laborum enim tenetur dolorum accusantium
-              quidem a harum hic molestiae cum? Labore numquam aliquid suscipit
-              hic? Alias fugiat perspiciatis voluptate vel explicabo vero
-              aperiam et saepe aspernatur, omnis illo expedita suscipit modi
-              quasi sapiente tempore tempora consequatur laudantium dolores
-              exercitationem ea iure facere esse. Et natus deserunt aspernatur
-              deleniti dolore, laudantium officiis nesciunt recusandae labore
-              unde nihil iste quasi ipsam. Fuga, dolorum. Repudiandae quibusdam
-              veritatis cupiditate ullam itaque, eos architecto beatae a
-              possimus in molestiae cum sapiente consequatur, dolorum,
-              voluptatum vero? Quasi eligendi doloremque nihil illo harum,
-              officia dignissimos vitae quae aliquid, optio vero ad pariatur
-              ipsum esse officiis? Dolore cupiditate mollitia culpa voluptatem.
-              Cum esse vero dolorem totam distinctio impedit quam ab tempora
-              illo! Fugit tempora iste, qui placeat ullam vel porro illum ab. Et
-              maxime quasi voluptate ipsa facilis itaque eos aut molestiae
-              consequuntur, explicabo sint, laboriosam atque iusto quae odit
-              animi pariatur quaerat deleniti non, doloremque distinctio
-              excepturi.{" "}
-            </PostHistory>
+            <PostHistory>{postContent} </PostHistory>
 
             <DashboardExp>
               <Experience experience={profile.experience} />
@@ -190,18 +157,22 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
   getCurrentProfile: PropTypes.func.isRequired,
+  getPostsById: PropTypes.func.isRequired,
   deleteAccount: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  post: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   profile: state.profile,
-  auth: state.auth
+  auth: state.auth,
+  post: state.post
 });
 
 export default connect(mapStateToProps, {
   getCurrentProfile,
   deleteAccount,
+  getPostsById,
   fetchUser
 })(Dashboard);

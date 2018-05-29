@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import Moment from "react-moment";
+import isEmpty from "../../validation/is-empty";
 // Styled Components
 import styled from "styled-components";
 import Link from "../common/Link";
+import Button from "../common/Button";
 
 const PostCard = styled.div`
   margin: 60px 0;
@@ -53,12 +55,15 @@ const PostCardContent = styled.div`
 `;
 const PostCardFooter = styled.div`
   display: grid;
-  grid-template-columns: 100px repeat(2, minmax(50px, 1fr));
-  grid-template-areas: "rating details tags";
+  grid-template-columns: minmax(50px, 250px) minmax(50px, 100px) minmax(
+      350px,
+      1fr
+    );
   grid-gap: 25px;
   background: #7d48df;
   padding: 20px;
   color: #fff;
+  align-items: baseline;
 
   li {
     padding: 0 5px;
@@ -72,14 +77,15 @@ const PostCardFooter = styled.div`
     font-size: 0.9rem;
   }
 `;
-const PostCardFooterDetails = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
 
 class PostItem extends Component {
   render() {
     const { post, auth } = this.props;
+    const tags = post.tags.map((tag, index) => (
+      <Button key={index} style={{ background: "#fdca1e", margin: "0 2%" }}>
+        {tag}
+      </Button>
+    ));
     return (
       <PostCard>
         <PostCardTitle>
@@ -98,8 +104,33 @@ class PostItem extends Component {
             </p>
           </PostCardTitleDate>{" "}
         </PostCardTitle>
-        <PostCardContent>{post.desc}</PostCardContent>
-        <PostCardFooter />
+        <PostCardContent>
+          {post.desc}
+          <Link href={`/post/${post._id}`}>
+            <Button style={{ margin: "0 5%" }}>Read More</Button>
+          </Link>
+        </PostCardContent>
+        <PostCardFooter>
+          <div className="duration">
+            <p>
+              Duration:{" "}
+              <strong>
+                <Moment format="YYYY/MM/DD">{post.start}</Moment> -{" "}
+                {isEmpty(post.end) ? (
+                  ""
+                ) : (
+                  <Moment format="YYYY/MM/DD">{post.end}</Moment>
+                )}
+              </strong>
+            </p>
+          </div>
+          <div className="details">
+            <p>
+              Budget: <strong>{isEmpty(post.budget) ? "" : post.budget}</strong>
+            </p>
+          </div>
+          <div className="tags">{tags}</div>
+        </PostCardFooter>
       </PostCard>
     );
   }

@@ -15,6 +15,10 @@ const PostSchema = new Schema({
     type: String,
     required: true
   },
+  company: {
+    type: String,
+    required: true
+  },
   image: {
     type: String
   },
@@ -29,15 +33,25 @@ const PostSchema = new Schema({
     type: String,
     required: true
   },
-  tags: {
-    type: [String],
-    trim: true
-  },
-  seeking: {
-    type: String,
-    trim: true,
-    required: true
-  },
+  tags: [
+    {
+      type: String,
+      trim: true
+    }
+  ],
+  seeking: [
+    {
+      desc: {
+        type: String,
+        trim: true
+      },
+      role: {
+        type: String,
+        required: true,
+        trim: true
+      }
+    }
+  ],
   budget: {
     type: String
   },
@@ -48,6 +62,16 @@ const PostSchema = new Schema({
   city: {
     type: String,
     required: true
+  },
+  start: {
+    type: Date,
+    required: true
+  },
+  end: {
+    type: Date
+  },
+  jobType: {
+    type: String
   },
   date: {
     type: Date,
@@ -84,5 +108,7 @@ const PostSchema = new Schema({
     }
   ]
 });
+
+PostSchema.index({ "$**": "text" });
 
 module.exports = Post = mongoose.model("post", PostSchema);

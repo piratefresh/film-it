@@ -47,7 +47,15 @@ router.get("/test", (req, res) => res.json({ msg: "Posts Works" }));
 // @desc    Get Posts
 // @access  Public
 router.get("/", (req, res) => {
-  Post.find(req.query)
+  let q = {};
+  if (req.query.search) {
+    q.search = req.query.search;
+    Post.find({ $text: { $search: q.search } })
+      .sort({ date: -1 })
+      .then(posts => res.json(posts))
+      .catch(err => res.status(404).json({ nopostsfound: "No posts found" }));
+  }
+  Post.find()
     .sort({ date: -1 })
     .then(posts => res.json(posts))
     .catch(err => res.status(404).json({ nopostsfound: "No posts found" }));
@@ -81,9 +89,15 @@ router.put("/:id/edit", isAuth, (req, res) => {
     avatar: req.body.avatar,
     title: req.body.title,
     desc: req.body.desc,
-    seeking: req.body.seeking,
+    seeking: {
+      role: req.body.seekingRole,
+      desc: req.body.seekingDesc
+    },
     city: req.body.city,
     state: req.body.state,
+    start: req.body.start,
+    end: req.body.end,
+    jobType: req.body.jobType,
     tags: req.body.tags.split(","),
     budget: req.body.budget,
     company: req.body.company
@@ -116,9 +130,15 @@ router.post("/", isAuth, upload.single("image"), (req, res) => {
       avatar: req.body.avatar,
       title: req.body.title,
       desc: req.body.desc,
-      seeking: req.body.seeking,
+      seeking: {
+        role: req.body.seekingRole,
+        desc: req.body.seekingDesc
+      },
       city: req.body.city,
       state: req.body.state,
+      start: req.body.start,
+      end: req.body.end,
+      jobType: req.body.jobType,
       tags: req.body.tags.split(","),
       budget: req.body.budget,
       company: req.body.company

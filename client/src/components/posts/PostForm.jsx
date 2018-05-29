@@ -1,13 +1,20 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 // Redux
 import { connect } from "react-redux";
 import { addPost } from "../../actions/postActions";
 // Material Ui
 import TextField from "@material-ui/core/TextField";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
 import { withStyles } from "@material-ui/core/styles";
 import FormCard from "../common/FormCard";
 import Button from "../common/Button";
+import Link from "../common/Link";
 
 const styles = {
   root: {
@@ -39,9 +46,13 @@ class PostForm extends Component {
       city: "",
       state: "",
       desc: "",
-      seeking: "",
+      seekingDesc: [],
+      seekingRole: [],
       budget: "",
       tags: "",
+      start: "",
+      end: "",
+      jobType: "",
       errors: {}
     };
 
@@ -75,35 +86,142 @@ class PostForm extends Component {
     newPost.append("state", this.state.state);
     newPost.append("company", this.state.company);
     newPost.append("desc", this.state.desc);
-    newPost.append("seeking", this.state.seeking);
+    newPost.append("seekingDesc", this.state.seekingDesc);
+    newPost.append("seekingRole", this.state.seekingRole);
+    newPost.append("start", this.state.start);
+    newPost.append("end", this.state.end);
+    newPost.append("jobType", this.state.jobType);
     newPost.append("image", this.state.image);
     newPost.append("budget", this.state.budget);
     newPost.append("tags", this.state.tags);
 
-    this.props.addPost(newPost);
-
-    this.setState({
-      title: "",
-      company: "",
-      city: "",
-      state: "",
-      desc: "",
-      seeking: "",
-      budget: "",
-      tags: ""
-    });
+    this.props.addPost(newPost, this.props.history);
   }
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
 
+  changeRole = i => e => {
+    let seekingRole = [...this.state.seekingRole];
+    seekingRole[i] = e.target.value;
+    this.setState({
+      seekingRole
+    });
+  };
+  changeDesc = i => e => {
+    let seekingDesc = [...this.state.seekingDesc];
+    seekingDesc[i] = e.target.value;
+    this.setState({
+      seekingDesc
+    });
+  };
+
+  handleDeleteRole = i => e => {
+    e.preventDefault();
+    let seekingRole = [
+      ...this.state.seekingRole.slice(0, i),
+      ...this.state.seekingRole.slice(i + 1)
+    ];
+    this.setState({
+      seekingRole
+    });
+  };
+
+  handleDeleteDesc = i => e => {
+    e.preventDefault();
+    let seekingDesc = [
+      ...this.state.seekingDesc.slice(0, i),
+      ...this.state.seekingDesc.slice(i + 1)
+    ];
+    this.setState({
+      seekingDesc
+    });
+  };
+
+  addInput = e => {
+    e.preventDefault();
+    let seekingRole = this.state.seekingRole.concat([""]);
+    let seekingDesc = this.state.seekingDesc.concat([""]);
+    this.setState({
+      seekingRole,
+      seekingDesc
+    });
+  };
+
   render() {
     const { errors } = this.state;
     const { classes } = this.props;
+
+    let seekingContent = (
+      <div>
+        {this.state.seekingRole.map((role, index) => (
+          <span key={index}>
+            <TextField
+              id="seekingRole"
+              label="Title of Role"
+              margin="normal"
+              name="seekingRole"
+              onChange={this.changeRole(index)}
+              value={role}
+              fullWidth={true}
+              helperText={errors.title}
+              FormHelperTextProps={{
+                classes: {
+                  root: classes.label
+                }
+              }}
+              InputProps={{
+                classes: {
+                  underline: classes.underline
+                }
+              }}
+              InputLabelProps={{
+                shrink: true
+              }}
+              required
+            />
+          </span>
+        ))}
+        {this.state.seekingDesc.map((desc, index) => (
+          <span key={index}>
+            <TextField
+              id="seekingDesc"
+              label="Describe the role"
+              margin="normal"
+              name="seekingDesc"
+              type="text"
+              multiline
+              rows="10"
+              onChange={this.changeDesc(index)}
+              value={desc}
+              fullWidth={true}
+              helperText={errors.title}
+              FormHelperTextProps={{
+                classes: {
+                  root: classes.label
+                }
+              }}
+              InputProps={{
+                classes: {
+                  underline: classes.underline
+                }
+              }}
+              InputLabelProps={{
+                shrink: true
+              }}
+            />
+          </span>
+        ))}
+        <Button onClick={this.addInput}>Add Role Description</Button>
+      </div>
+    );
     return (
       <div>
         <form onSubmit={this.onSubmit}>
           <FormCard>
+            <Link href="/feed">
+              <Button>Back to Posts</Button>
+            </Link>
             <h4>Add Post</h4>
             <p>Looking for members for your next project? Post an ad here!</p>
             <TextField
@@ -152,6 +270,92 @@ class PostForm extends Component {
                 shrink: true
               }}
               required
+            />
+            <FormControl className={classes.formControl}>
+              <InputLabel htmlFor="department-helper">Department</InputLabel>
+              <Select
+                id="jobType"
+                name="jobType"
+                value={this.state.jobTybe}
+                onChange={this.onChange}
+                inputProps={{
+                  name: "jobType",
+                  id: "department-simple"
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={"Art Department"}>Art Department</MenuItem>
+                <MenuItem value={"Camera Department"}>
+                  Camera Department
+                </MenuItem>
+                <MenuItem value={"Lighting & Grip Department"}>
+                  Lighting & Grip Department
+                </MenuItem>
+                <MenuItem value={"Makeup & Wardrobe Department"}>
+                  Makeup & Wardrobe Department
+                </MenuItem>
+                <MenuItem value={"Production Department"}>
+                  Production Department
+                </MenuItem>
+                <MenuItem value={"Script & VTR Department"}>
+                  Script & VTR Department
+                </MenuItem>
+                <MenuItem value={"Sound Department"}>Sound Department</MenuItem>
+                <MenuItem value={"Stunts & FX Department"}>
+                  Stunts & FX Department
+                </MenuItem>
+              </Select>
+              <FormHelperText>What kind of job is this</FormHelperText>
+            </FormControl>
+            <TextField
+              id="start"
+              label="start"
+              margin="normal"
+              name="start"
+              type="date"
+              value={this.state.start}
+              onChange={this.onChange}
+              fullWidth={true}
+              FormHelperTextProps={{
+                classes: {
+                  root: classes.label
+                }
+              }}
+              InputProps={{
+                classes: {
+                  underline: classes.underline
+                }
+              }}
+              InputLabelProps={{
+                shrink: true
+              }}
+            />
+            <h6>To Date</h6>
+            <TextField
+              id="end"
+              label="end"
+              margin="normal"
+              name="end"
+              type="date"
+              disabled={this.state.disabled ? "disabled" : ""}
+              value={this.state.end}
+              onChange={this.onChange}
+              fullWidth={true}
+              FormHelperTextProps={{
+                classes: {
+                  root: classes.label
+                }
+              }}
+              InputProps={{
+                classes: {
+                  underline: classes.underline
+                }
+              }}
+              InputLabelProps={{
+                shrink: true
+              }}
             />
             <TextField
               id="city"
@@ -227,32 +431,7 @@ class PostForm extends Component {
               }}
               required
             />
-            <TextField
-              id="seeking"
-              label="Describe what you seeking for the project"
-              margin="normal"
-              name="seeking"
-              multiline
-              rows="10"
-              value={this.state.seeking}
-              onChange={this.onChange}
-              fullWidth={true}
-              helperText={errors.seeking}
-              FormHelperTextProps={{
-                classes: {
-                  root: classes.label
-                }
-              }}
-              InputProps={{
-                classes: {
-                  underline: classes.underline
-                }
-              }}
-              InputLabelProps={{
-                shrink: true
-              }}
-              required
-            />
+            {seekingContent}
             <TextField
               id="image"
               label="Profile Picture"
@@ -349,4 +528,6 @@ const mapStateToProps = state => ({
 
 const styledComponent = withStyles(styles)(PostForm);
 
-export default connect(mapStateToProps, { addPost })(styledComponent);
+export default connect(mapStateToProps, { addPost })(
+  withRouter(styledComponent)
+);
