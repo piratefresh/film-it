@@ -61,14 +61,12 @@ router.get("/", (req, res) => {
     .catch(err => res.status(404).json({ nopostsfound: "No posts found" }));
 });
 
-// @route   Get api/posts/:id
-// @desc    Get Post by id
-// @access  Public
 router.get("/:id", (req, res) => {
-  Post.findById(req.params.id)
+  Post.find({ user: req.params.id })
+    .sort([["_id", -1]])
     .then(posts => res.json(posts))
     .catch(err =>
-      res.status(404).json({ nopostfound: "No post found with that ID" })
+      res.status(404).json({ nopostfound: "Couldn't update that post" })
     );
 });
 
@@ -82,7 +80,6 @@ router.put("/:id/edit", isAuth, (req, res) => {
     // if any errors, send 400 with errors object
     return res.status(400).json(errors);
   }
-  console.log(req.body);
   updatePost = {
     user: req.user.id,
     name: req.body.name,
@@ -166,23 +163,31 @@ router.delete("/:id", isAuth, (req, res) => {
   });
 });
 
-// @route   POST api/posts/like/:id
+// @route   POST api/posts/apply/:id
 // @desc    Like Post
 // @access  Private
-router.post("/like/:id", isAuth, (req, res) => {
+router.post("/:id/apply", isAuth, (req, res) => {
   Profile.findOne({ user: req.user.id }).then(profile => {
     Post.findById(req.params.id)
       .then(post => {
         if (
-          post.likes.filter(like => like.user.toString() === req.user.id)
-            .length > 0
+          post.applications.filter(
+            apply => apply.user.toString() === req.user.id
+          ).length > 0
         ) {
           return res
             .status(400)
-            .json({ alreadyliked: "User already liked this post" });
+            .json({ alreadyapplied: "User already applied to this post" });
         }
         // Add user id to likes array
-        post.likes.unshift({ user: req.user.id });
+        post.applications.unshift({
+          user: req.user.id,
+          coverletter: req.body.coverletter,
+          handle: req.body.handle,
+          name: req.body.name,
+          email: req.body.email,
+          avatar: req.body.avatar
+        });
         //save to db
         post.save().then(post => res.json(post));
       })

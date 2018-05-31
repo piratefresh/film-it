@@ -15,6 +15,7 @@ require("./authentication/facebook");
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
+const messages = require("./routes/api/messages");
 
 const app = express();
 
@@ -69,6 +70,7 @@ require("./routes/authRoutes")(app);
 app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/posts", posts);
+app.use("/api/messages", messages);
 
 // Server init
 const port = process.env.PORT || 5000;

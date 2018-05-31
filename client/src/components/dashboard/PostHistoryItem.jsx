@@ -17,6 +17,11 @@ const PostDetails = styled.div`
     font-size: 0.8rem;
   }
 `;
+const Actions = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin: 2% 0;
+`;
 
 class PostHistoryItem extends Component {
   onDeleteClick(id) {
@@ -27,22 +32,28 @@ class PostHistoryItem extends Component {
   }
   render() {
     const { post } = this.props;
+    console.log(post + " post history item");
     return (
       <PostDetails>
         <div className="post-title">
           <h4>{post.title}</h4>
           <div className="post-shorten">{post.desc.substr(0, 150)}</div>
         </div>{" "}
-        <Button
-          onClick={this.onDeleteClick.bind(this, post._id)}
-          style={{ background: "#fd381e" }}
-          type="button"
-        >
-          Delete
-        </Button>
-        <Link href={`/edit-post/${post._id}`}>
-          <Button type="button">Edit</Button>
-        </Link>
+        <Actions>
+          <Button
+            onClick={this.onDeleteClick.bind(this, post._id)}
+            style={{ background: "#fd381e" }}
+            type="button"
+          >
+            Delete
+          </Button>
+          <Link href={`/edit-post/${post._id}`}>
+            <Button type="button">Edit</Button>
+          </Link>
+          <Link href={`/applications/${post._id}`}>
+            <Button type="button">View Applications</Button>
+          </Link>
+        </Actions>
       </PostDetails>
     );
   }

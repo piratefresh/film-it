@@ -16,3 +16,8 @@ export const GET_POST = "GET_POST";
 export const ADD_POST = "ADD_POST";
 export const DELETE_POST = "DELETE_POST";
 export const EDIT_POST = "EDIT_POST";
+// Messages
+export const GET_MESSAGES = "GET_MESSAGES";
+export const MESSAGES_LOADING = "MESSAGES_LOADING";
+export const SEND_MESSAGE = "SEND_MESSAGE";
+export const GET_SENT_MESSAGES = "GET_SENT_MESSAGES";

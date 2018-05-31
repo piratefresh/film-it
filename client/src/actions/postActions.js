@@ -71,7 +71,7 @@ export const getPosts = () => dispatch => {
 export const getPostsById = id => dispatch => {
   dispatch(setPostLoading);
   axios
-    .get(`/api/posts?user=${id}`)
+    .get(`/api/posts/${id}`)
     .then(res =>
       dispatch({
         type: GET_POSTS,
@@ -107,24 +107,12 @@ export const editPost = (id, postData, history) => dispatch => {
 };
 
 // Add like
-export const addLike = id => dispatch => {
+export const addApplication = (id, data, history) => dispatch => {
   dispatch(setPostLoading);
   axios
-    .post(`/api/posts/like/${id}`)
+    .post(`/api/posts/${id}/apply`, data)
     .then(res => dispatch(getPosts()))
-    .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
-    );
-};
-// Remove like
-export const removeLike = id => dispatch => {
-  dispatch(setPostLoading);
-  axios
-    .post(`/api/posts/unlike/${id}`)
-    .then(res => dispatch(getPosts()))
+    .then(res => history.push(`/posts/${id}`))
     .catch(err =>
       dispatch({
         type: GET_ERRORS,

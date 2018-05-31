@@ -7,6 +7,8 @@ import isEmpty from "../../validation/is-empty";
 import styled from "styled-components";
 import Link from "../common/Link";
 import Button from "../common/Button";
+// Modal
+import Modal from "../common/Modal";
 
 const PostCard = styled.div`
   margin: 60px 0;
@@ -79,8 +81,18 @@ const PostCardFooter = styled.div`
 `;
 
 class PostItem extends Component {
+  state = {
+    isOpen: false
+  };
+
+  toggleModal = e => {
+    e.preventDefault(e);
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  };
   render() {
-    const { post, auth } = this.props;
+    const { post, profile, auth } = this.props;
     const tags = post.tags.map((tag, index) => (
       <Button key={index} style={{ background: "#fdca1e", margin: "0 2%" }}>
         {tag}
@@ -102,6 +114,20 @@ class PostItem extends Component {
               <Moment format="YYYY/MM/DD">{post.date}</Moment>
               <i class="far fa-clock" />
             </p>
+            <Button
+              onClick={this.toggleModal}
+              styled={{ background: "#fdca1e" }}
+            >
+              Apply Now
+            </Button>
+            <Modal
+              show={this.state.isOpen}
+              onClose={this.toggleModal}
+              profile={profile}
+              auth={auth}
+            >
+              Here's some content for the modal
+            </Modal>
           </PostCardTitleDate>{" "}
         </PostCardTitle>
         <PostCardContent>
@@ -142,7 +168,8 @@ PostItem.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  profile: state.profile
 });
 
 export default connect(mapStateToProps)(PostItem);

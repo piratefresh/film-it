@@ -7,8 +7,6 @@ import {
   clearCurrentProfile,
   getCurrentProfile
 } from "../../../actions/profileActions";
-//frontend
-import Spinner from "../../common/Spinner";
 
 const Nav = styled.nav`
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
@@ -79,6 +77,9 @@ class Navbar extends Component {
             <NavLink href="/profiles">
               <i class="fas fa-users" />Profiles
             </NavLink>
+            <NavLink href="/inbox">
+              <i class="fas fa-inbox" />Inbox
+            </NavLink>
             <NavLink href="/dashboard">
               <i className="fas fa-user-plus" />Dashboard
             </NavLink>
@@ -98,6 +99,9 @@ class Navbar extends Component {
             </NavLink>
             <NavLink href="/profiles">
               <i class="fas fa-users" />Profiles
+            </NavLink>
+            <NavLink href="/inbox">
+              <i class="fas fa-inbox" />Inbox
             </NavLink>
             <NavLink href="/dashboard">
               <NavImg src={profile.avatar} />Dashboard

@@ -11,6 +11,7 @@ import { getProfileByHandle } from "../../actions/profileActions";
 import styled from "styled-components";
 import Spinner from "../common/Spinner";
 import Button from "../common/Button";
+import Link from "../common/Link";
 
 const ProfileContainer = styled.div`
   height: 100%;
@@ -44,7 +45,9 @@ class Profile extends Component {
     } else {
       profileContent = (
         <div>
-          <Button>Back to Profiles</Button>
+          <Link href="/profiles">
+            <Button>Back to Profiles</Button>
+          </Link>
           <ProfileContainer>
             <ProfileAvatar src={profile.avatar} />
             <div className="profile-content">

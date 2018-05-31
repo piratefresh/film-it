@@ -19,10 +19,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 //Components
 import Navbar from "./components/layout/Nav/Navbar";
-import Landing from "./components/layout/Landing";
 import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
+import Inbox from "./components/messages/Inbox";
 import CreateProfileNew from "./components/create-profile/CreateProfileNew";
 import EditProfile from "./components/edit-profile/EditProfile";
 import EditGalleryPictures from "./components/edit-profile/EditProfileGallery";
@@ -34,6 +34,7 @@ import Posts from "./components/posts/Posts";
 import PostForm from "./components/posts/PostForm";
 import EditPostForm from "./components/posts/EditPostForm";
 import Post from "./components/post/Post";
+import Applications from "./components/post/Applications";
 import Login from "./components/auth/Login";
 // Styling
 import "./App.css";
@@ -111,13 +112,14 @@ class App extends Component {
             <Navbar />
             <Container>
               <Switch>
-                <Route exact path="/" component={Landing} />
+                <Route exact path="/" component={Posts} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/profiles" component={Profiles} />
                 <Route exact path="/profile/:handle" component={Profile} />
                 <Route exact path="/feed" component={Posts} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
+                <PrivateRoute exact path="/inbox" component={Inbox} />
                 <PrivateRoute
                   exact
                   path="/create-profile"
@@ -148,6 +150,11 @@ class App extends Component {
                   exact
                   path="/edit-post/:id"
                   component={EditPostForm}
+                />
+                <PrivateRoute
+                  exact
+                  path="/applications/:id"
+                  component={Applications}
                 />
                 <PrivateRoute exact path="/add-post" component={PostForm} />
                 <Route component={NoMatch} />

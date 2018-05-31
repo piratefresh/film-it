@@ -3,10 +3,13 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { getPost } from "../../actions/postActions";
 import Spinner from "../common/Spinner";
+import Button from "../common/Button";
 import isEmpty from "../../validation/is-empty";
 // Styled Components
 import styled from "styled-components";
 import Moment from "react-moment";
+// Modal
+import Modal from "../common/Modal";
 
 const PostContainer = styled.div`
   background: #fff;
@@ -100,15 +103,27 @@ const PostTags = styled.div`
 `;
 
 class Post extends Component {
+  state = {
+    isOpen: false
+  };
+
+  toggleModal = () => {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  };
   componentDidMount() {
     this.props.getPost(this.props.match.params.id);
   }
   render() {
     const { post, loading } = this.props.post;
+
+    // Create tags
     let tags;
     if (post.tags) {
       tags = post.tags.map((tag, index) => <li key={index}>{tag}</li>);
     }
+    // Role description section
     let roles;
     if (post.seeking) {
       roles = post.seeking.map((role, index) => (
@@ -153,6 +168,16 @@ class Post extends Component {
               <p>{post.name}</p>
             </PostUser>
             <PostDetails>
+              <Button
+                onClick={this.toggleModal}
+                styled={{ background: "#fdca1e" }}
+                post={post}
+              >
+                Apply Now
+              </Button>
+              <Modal show={this.state.isOpen} onClose={this.toggleModal}>
+                Here's some content for the modal
+              </Modal>
               <p>
                 Duration:{" "}
                 <strong>
@@ -193,7 +218,9 @@ Post.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  post: state.post
+  post: state.post,
+  auth: state.auth,
+  profile: state.profile
 });
 
 export default connect(mapStateToProps, { getPost })(Post);

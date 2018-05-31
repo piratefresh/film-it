@@ -6,7 +6,6 @@ import { getPostsById } from "../../actions/postActions";
 import { fetchUser } from "../../actions/authActions";
 import Spinner from "../common/Spinner";
 import styled from "styled-components";
-import ProfileActions from "./ProfileActions";
 import PostHistoryItem from "./PostHistoryItem";
 // Styled Components
 import Button from "../common/Button";
@@ -57,6 +56,7 @@ class Dashboard extends Component {
   componentDidMount() {
     this.props.getCurrentProfile();
     this.props.getPostsById(this.props.auth.user.id);
+    console.log(this.props.auth.user.id);
   }
 
   onDeleteClick(e) {
@@ -68,10 +68,13 @@ class Dashboard extends Component {
     const { profile, loading } = this.props.profile;
     const { posts } = this.props.post;
     // Post Map
+    console.log(posts);
     const postContent = posts.map(post => (
-      <PostHistoryItem key={post._id} post={post} />
+      <div>
+        <p>{post.title}</p>
+        <PostHistoryItem key={post._id} post={post} user={user} />
+      </div>
     ));
-
     let dashboardContent;
     if (profile === null || loading) {
       dashboardContent = <Spinner />;
@@ -112,7 +115,7 @@ class Dashboard extends Component {
                 experience={profile.experience}
               />
             </DashboardDetails>
-            <PostHistory>{postContent} </PostHistory>
+            <PostHistory>{postContent}</PostHistory>
 
             <DashboardExp>
               <Experience experience={profile.experience} />

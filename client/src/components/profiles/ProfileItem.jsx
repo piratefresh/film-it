@@ -11,7 +11,7 @@ const ProfileCard = styled.div`
   margin-bottom: 15%;
   margin-left: 10%;
   width: 280px;
-  height: 310px;
+  height: 320px;
   background: #fff;
   padding: 2%;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
@@ -42,7 +42,7 @@ const SkillContainer = styled.div`
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-around;
-  padding: 5% 0;
+  padding: 3% 0;
 `;
 const List = styled.li`
   list-style: none;
