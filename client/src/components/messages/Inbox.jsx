@@ -1,13 +1,22 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import isEmpty from "../../validation/is-empty";
+// Component
+import InboxChat from "./InboxChat";
+import MessageWindow from "./MessageWindow";
 // React
-import { getMessages, sendMessage } from "../../actions/messageActions";
+import {
+  getMessages,
+  sendMessage,
+  getMessageById
+} from "../../actions/messageActions";
 import { getProfiles } from "../../actions/profileActions";
 // Styled Components
 import styled from "styled-components";
 import Button from "../common/Button";
 import Spinner from "../common/Spinner";
+import Link from "../common/Link";
 // AutoComplete
 import Select from "react-select";
 
@@ -28,22 +37,11 @@ const InboxList = styled.div`
   grid-area: list;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
   padding: 2% 2%;
-`;
-const InboxListMesg = styled.div`
-  display: flex;
-  font-size: 0.8rem;
   img {
-    height: 50px;
     width: 50px;
+    height: 50px;
     object-fit: cover;
-    border-radius: 50%;
   }
-`;
-const InboxMessageWindow = styled.div`
-  grid-area: messages;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
-  margin-bottom: 5%;
-  padding: 2% 2%;
 `;
 const InboxTypeContainer = styled.div`
   grid-area: textarea;
@@ -75,41 +73,57 @@ class Inbox extends Component {
     this.state = {
       makeNewMessage: false,
       subject: "",
-      message: "",
-      avatar: "",
-      name: "",
       senderHandle: "",
-      recepientHandle: "",
+      recieverHandle: "",
+      senderAvatar: "",
+      message: "",
       errors: {}
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onClick = this.onClick.bind(this);
     // Select react
   }
   componentDidMount() {
     this.props.getMessages();
     this.props.getProfiles();
   }
+
+  static getDerivedStateFromProps(props, state) {
+    const { currentMessage } = props.conversations;
+    if (props.conversations.currentMessage === null) {
+      return null;
+    }
+    return {
+      currentMessage
+    };
+  }
+
   onSubmit(e) {
     e.preventDefault();
 
     const { profile } = this.props.profile;
-    const { recepientHandle, subject } = this.state;
+    const { recepientHandle, subject, message } = this.state;
 
     const newMesg = {
       subject: subject,
-      message: this.state.message,
-      avatar: profile.avatar,
-      name: profile.user.name,
-      senderHandle: profile.handle
+      senderHandle: profile.handle,
+      recieverHandle: recepientHandle.value,
+      senderAvatar: profile.avatar,
+      message: message
     };
-    console.log(subject, recepientHandle.value);
-    this.props.sendMessage(newMesg, recepientHandle.value, subject);
+    this.props.sendMessage(newMesg);
   }
 
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
+  }
+
+  onClick(id, e) {
+    e.preventDefault();
+
+    this.props.getMessageById(id);
   }
 
   toggleMakeMessage = () => {
@@ -128,8 +142,8 @@ class Inbox extends Component {
 
   render() {
     const { errors, makeNewMessage, recepientHandle } = this.state;
-    const { profiles } = this.props.profile;
-    const { messages, loading } = this.props.message;
+    const { profiles, profile } = this.props.profile;
+    const { conversations, loading, currentMessage } = this.props.conversations;
 
     let userHandles = [];
     if (profiles) {
@@ -138,21 +152,37 @@ class Inbox extends Component {
       });
     }
     let inboxListContent;
-    if (messages === null || loading) {
+    if (conversations === null || loading) {
       inboxListContent = <Spinner />;
     } else {
-      if (Object.keys(messages).length > 0) {
-        inboxListContent = messages.map(mesg => {
-          <InboxListMesg key={mesg._id}>
-            <img src={mesg.sender.avatar} alt="" srcset="" />
-            <p>{mesg.messages}</p>
-          </InboxListMesg>;
+      if (profile !== null) {
+        inboxListContent = conversations.map(convo => {
+          const avatar = convo.avatars.filter(
+            avatar => !profile.avatar.includes(avatar)
+          );
+          avatar.toString();
+          const sender = convo.participants.filter(
+            sender => !profile.handle.includes(sender)
+          );
+          return (
+            <Link
+              onClick={e => {
+                this.onClick(convo._id, e);
+              }}
+              href={`/inbox/${convo._id}`}
+            >
+              <InboxChat
+                key={convo._id}
+                convo={convo}
+                profile={profile}
+                avatar={avatar}
+                sender={sender}
+              />
+            </Link>
+          );
         });
-      } else {
-        inboxListContent = <p>No Messages yet</p>;
       }
     }
-
     let makeNewMessageInputs;
     if (!makeNewMessage) {
       makeNewMessageInputs = (
@@ -193,7 +223,7 @@ class Inbox extends Component {
           <InboxTypeContainer>
             <textarea
               id="message"
-              placeholder="Type Message here"
+              placeholder="Type message here"
               name="message"
               onChange={this.onChange}
             />
@@ -221,9 +251,7 @@ class Inbox extends Component {
           <h4>Inbox</h4>
           {inboxListContent}
         </InboxList>
-        <InboxMessageWindow>
-          <h4>Message Window</h4>
-        </InboxMessageWindow>
+        <MessageWindow currentMessage={currentMessage} />
         <form onSubmit={this.onSubmit}>{makeNewMessageInputs}</form>
       </InboxContainer>
     );
@@ -234,17 +262,20 @@ Inbox.propTypes = {
   getMessages: PropTypes.func.isRequired,
   sendMessage: PropTypes.func.isRequired,
   getProfiles: PropTypes.func.isRequired,
-  messages: PropTypes.object.isRequired,
+  getMessageById: PropTypes.func.isRequired,
+  conversations: PropTypes.object.isRequired,
   profile: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  message: state.message,
+  conversations: state.conversations,
+  currentMessage: state.currentMessage,
   profile: state.profile
 });
 
 export default connect(mapStateToProps, {
   getMessages,
   sendMessage,
+  getMessageById,
   getProfiles
 })(Inbox);

@@ -18,6 +18,8 @@ const posts = require("./routes/api/posts");
 const messages = require("./routes/api/messages");
 
 const app = express();
+var http = require("http").Server(app);
+var io = require("socket.io")(http);
 
 // log every request to the console
 app.use(morgan("dev"));
@@ -72,7 +74,11 @@ app.use("/api/profile", profile);
 app.use("/api/posts", posts);
 app.use("/api/messages", messages);
 
+io.on("connection", function(socket) {
+  console.log("a user connected");
+});
+
 // Server init
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Server running on port: ${port}`));
+http.listen(port, () => console.log(`Server running on port: ${port}`));

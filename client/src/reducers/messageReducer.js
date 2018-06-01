@@ -2,12 +2,12 @@ import {
   GET_MESSAGES,
   MESSAGES_LOADING,
   SEND_MESSAGE,
-  GET_SENT_MESSAGES
+  GET_CURRENT_MESSAGE
 } from "../actions/types";
 
 const initialState = {
-  messages: null,
-  sentMessages: null,
+  conversations: null,
+  currentMessage: null,
   loading: false
 };
 
@@ -22,20 +22,20 @@ export default function(state = initialState, action) {
     case SEND_MESSAGE: {
       return {
         ...state,
-        messages: [action.payload, ...state.posts]
+        conversations: [action.payload, ...state.posts]
       };
     }
-    case GET_SENT_MESSAGES: {
+    case GET_CURRENT_MESSAGE: {
       return {
         ...state,
-        sentMessages: action.payload,
+        currentMessage: action.payload,
         loading: false
       };
     }
     case GET_MESSAGES: {
       return {
         ...state,
-        messages: action.payload,
+        conversations: action.payload,
         loading: false
       };
     }

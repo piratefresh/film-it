@@ -43,6 +43,14 @@ import bgPattern from "./img/svg/topography.svg";
 //Styled Components
 import styled from "styled-components";
 import getCookie from "./components/common/CheckCookie";
+//Socket io
+const io = require("socket.io-client");
+
+const socket = io.connect("http://localhost:5000", () => {
+  socket.on("newMesg", msg => {
+    console.log("message: " + msg);
+  });
+});
 
 const Wrapper = styled.div`
   background-color: #f9f9f9;
@@ -120,6 +128,7 @@ class App extends Component {
                 <Route exact path="/feed" component={Posts} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
                 <PrivateRoute exact path="/inbox" component={Inbox} />
+                <PrivateRoute exact path="/inbox/:id" component={Inbox} />
                 <PrivateRoute
                   exact
                   path="/create-profile"

@@ -36,6 +36,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "react-dropzone-component": "^3.2.0",
+    "socket.io": "^2.1.1",
     "uuid": "^3.2.1",
     "validator": "^9.4.1"
   },

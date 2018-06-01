@@ -4,7 +4,7 @@ import {
   GET_MESSAGES,
   MESSAGES_LOADING,
   GET_ERRORS,
-  GET_SENT_MESSAGES,
+  GET_CURRENT_MESSAGE,
   SEND_MESSAGE
 } from "./types";
 
@@ -27,29 +27,29 @@ export const getMessages = () => dispatch => {
     );
 };
 
-// Get messages
-export const getSentMessages = () => dispatch => {
+// Get message by id
+export const getMessageById = id => dispatch => {
   dispatch(setMessagesLoading());
   axios
-    .get("api/messages/sent")
+    .get(`/api/messages/${id}`)
     .then(res =>
       dispatch({
-        type: GET_SENT_MESSAGES,
+        type: GET_CURRENT_MESSAGE,
         payload: res.data
       })
     )
     .catch(err =>
       dispatch({
-        type: GET_SENT_MESSAGES,
+        type: GET_CURRENT_MESSAGE,
         payload: {}
       })
     );
 };
 
 // Send message
-export const sendMessage = (postData, handle, subject) => dispatch => {
+export const sendMessage = postData => dispatch => {
   axios
-    .post(`api/messages/post/${handle}/${subject}`, postData)
+    .post(`api/messages/convo`, postData)
     .then(res =>
       dispatch({
         type: SEND_MESSAGE,

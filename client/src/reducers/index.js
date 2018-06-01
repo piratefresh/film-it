@@ -10,5 +10,5 @@ export default combineReducers({
   errors: errorReducer,
   profile: profileReducer,
   post: postReducer,
-  message: messageReducer
+  conversations: messageReducer
 });

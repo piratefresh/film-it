@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const socket = require("socket.io");
 const mongoose = require("mongoose");
 const passport = require("passport");
 
@@ -18,21 +19,24 @@ const isAuth = require("../../middlewares/isAuth");
 // @desc    Get User messages
 // @access  Private
 router.get("/", isAuth, (req, res) => {
-  Message.find({
-    $or: [{ recipient: req.user.id }, { senderId: req.user.id }]
-  })
-    .sort({ date: -1 })
-    .then(messages => res.json(messages))
-    .catch(err =>
-      res.status(404).json({ nomessagesfound: "Couldn't find any messages" })
-    );
+  Profile.findOne({ user: { _id: req.user.id } }).then(profile => {
+    Conversation.find({
+      participants: profile.handle
+    })
+      .sort({ date: -1 })
+      .then(messages => res.json(messages))
+      .catch(err =>
+        res.status(404).json({ nomessagesfound: "Couldn't find any messages" })
+      );
+  });
 });
 
 // @route   Get api/messages/:id
 // @desc    Get User message by id
 // @access  Private
 router.get("/:id", isAuth, (req, res) => {
-  Message.findById(req.params.id)
+  console.log(req.params);
+  Conversation.findById(req.params.id)
     .sort({ date: -1 })
     .then(messages => res.json(messages))
     .catch(err =>
@@ -44,81 +48,63 @@ router.get("/:id", isAuth, (req, res) => {
 // @desc    Get unread messages
 // @access  Private
 router.get("/unread", isAuth, (req, res) => {
-  Message.find({
-    recipient: req.user.id,
-    seen: false
-  })
-    .sort({ date: -1 })
-    .then(messages => res.json(messages))
-    .catch(err => {
-      console.log(err);
-      res.status(404).json({ nomessagesfound: "Couldn't find any messages" });
-    });
+  Profile.findOne(req.user.id).then(profile => {
+    Conversation.find({
+      participants: profile.handle,
+      messages: {
+        read: false
+      }
+    })
+      .sort({ date: -1 })
+      .then(messages => res.json(messages))
+      .catch(err => {
+        console.log(err);
+        res.status(404).json({ nomessagesfound: "Couldn't find any messages" });
+      });
+  });
 });
 
 // @route   Get api/messages/post/:handle/:subject
 // @desc    Post Message to user by handle
 // @access  Public
-router.post("/post/:handle/:subject", isAuth, (req, res) => {
-  Profile.findOne({ handle: req.params.handle }).then(profile => {
-    const query = {
-      subject: req.params.subject,
-      $or: [{ recipient: req.user.id }, { senderId: req.user.id }]
-    };
-    Message.findOneAndUpdate(
-      query,
-      { $push: { messages: req.body.message } },
+router.post("/convo", isAuth, (req, res) => {
+  Profile.findOne({ handle: req.body.recieverHandle }).then(profile => {
+    Conversation.findOneAndUpdate(
+      {
+        participants: {
+          $in: [req.body.senderHandle, req.body.recieverHandle]
+        },
+        subject: req.body.subject
+      },
+      {
+        $push: {
+          messages: {
+            sender: req.body.senderHandle,
+            message: req.body.message
+          }
+        }
+      },
       { new: true },
-      (error, doc) => {
+      (err, doc) => {
         if (doc) {
-          console.log("subject exist, appending message");
+          console.log("message with users exist, appending message");
           res.json(doc);
         } else {
-          console.log("new subject, making new message");
-          const newMesg = new Message({
+          console.log("Creating new Message");
+          const newConvo = new Conversation({
             subject: req.body.subject,
-            senderId: req.user.id,
+            participants: [req.body.senderHandle, req.body.recieverHandle],
+            avatars: [req.body.senderAvatar, profile.avatar],
             messages: {
-              replyName: req.body.senderHandle,
-              text: req.body.message
-            },
-            sender: {
-              avatar: req.body.avatar,
-              name: req.body.name,
-              handle: req.body.senderHandle
-            },
-            recipient: profile.user
+              sender: req.body.senderHandle,
+              message: req.body.message
+            }
           });
-          newMesg.save().then(mesg => res.json(mesg));
+          newConvo.save().then(convo => res.json(convo));
         }
       }
     );
   });
-});
-
-router.post("/convo/:handle1/handle2", isAuth, (req, res) => {
-  Conversation.findOneAndUpdate(
-    {
-      participants: { $all: [req.params.handle1, req.params.handle2] },
-      subject: req.params.subject
-    },
-    { $push: { sender: req.body.sender, content: req.body.content } },
-    (err, doc) => {
-      if (doc) {
-        console.log("message with users exist, appending message");
-        res.json(doc);
-      } else {
-        console.log("Creating new Message");
-        const newConvo = new Conversation({
-          participants: [req.params.handle1, req.params.handle2],
-          messages: {
-            sender: req.body.handle,
-            content: req.body.content
-          }
-        });
-      }
-    }
-  );
 });
 
 module.exports = router;
