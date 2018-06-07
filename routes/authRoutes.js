@@ -115,7 +115,6 @@ module.exports = router => {
       failureRedirect: "/"
     }),
     (req, res) => {
-      console.log(req.user);
       // User Matched
       const payload = {
         id: req.user.id,
@@ -127,7 +126,6 @@ module.exports = router => {
       let token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
 
       token = "Bearer " + token;
-      console.log(token);
       res.cookie("jwtToken", token);
       res.redirect("/dashboard");
     }

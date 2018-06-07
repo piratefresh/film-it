@@ -1,9 +1,4 @@
-import {
-  GET_ERRORS,
-  SET_CURRENT_USER,
-  FETCH_GOOGLE_USER,
-  LOGOUT_GOOGLE_USER
-} from "./types";
+import { GET_ERRORS, SET_CURRENT_USER, LOGOUT_GOOGLE_USER } from "./types";
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
@@ -67,13 +62,6 @@ export const logoutUser = () => dispatch => {
   // Set current user to {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
 };
-
-/* Google Login */
-/* export const fetchUser = () => async dispatch => {
-  const res = await axios.get("/api/users/current");
-
-  dispatch({ type: FETCH_GOOGLE_USER, payload: res.data }); // changed res to res.data
-}; */
 
 /* Google Login */
 export const fetchUser = () => async dispatch => {

@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const socket = require("socket.io");
 const mongoose = require("mongoose");
 const passport = require("passport");
 
@@ -11,7 +10,6 @@ const Message = require("../../modules/Message");
 const Conversation = require("../../modules/Conversation");
 // Load Profile Model
 const Profile = require("../../modules/Profile");
-
 // Check for either jwt or isauthenticated
 const isAuth = require("../../middlewares/isAuth");
 
@@ -100,7 +98,9 @@ router.post("/convo", isAuth, (req, res) => {
               message: req.body.message
             }
           });
-          newConvo.save().then(convo => res.json(convo));
+          newConvo.save().then(convo => {
+            res.json(convo);
+          });
         }
       }
     );

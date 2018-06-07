@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../actions/authActions";
+// frontend
 import styled from "styled-components";
-
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import TextField from "material-ui/TextField";
 import GoogleSvg from "../../img/svg/btn_google_dark_normal_ios.svg";

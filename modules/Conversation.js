@@ -4,9 +4,8 @@ const MessagesSchema = require("./Message");
 
 // Create Schema
 const ConversationSchema = new Schema({
-  subject: {
-    type: String,
-    required: true
+  roomId: {
+    type: String
   },
   participants: [
     {
@@ -16,8 +15,7 @@ const ConversationSchema = new Schema({
   ],
   avatars: [
     {
-      type: [String],
-      required: true
+      type: [String]
     }
   ],
   messages: [MessagesSchema],

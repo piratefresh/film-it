@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
 import rootReducer from "./reducers/";
+import io from "socket.io-client";
 
 const initialState = {};
 
@@ -16,3 +17,6 @@ const store = createStore(
 );
 
 export default store;
+
+//connect socket
+export const socket = io("localhost:5000");

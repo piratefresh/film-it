@@ -174,9 +174,12 @@ const mapStateToProps = state => ({
   profile: state.profile
 });
 
-export default connect(mapStateToProps, {
-  logoutUser,
-  logoutGoogleUser,
-  getCurrentProfile,
-  clearCurrentProfile
-})(Navbar);
+export default connect(
+  mapStateToProps,
+  {
+    logoutUser,
+    logoutGoogleUser,
+    getCurrentProfile,
+    clearCurrentProfile
+  }
+)(Navbar);

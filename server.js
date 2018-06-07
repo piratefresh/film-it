@@ -74,10 +74,9 @@ app.use("/api/profile", profile);
 app.use("/api/posts", posts);
 app.use("/api/messages", messages);
 
-io.on("connection", function(socket) {
-  console.log("a user connected");
-});
-
+//Socket.IO
+const socket = require("./socket");
+socket(io);
 // Server init
 const port = process.env.PORT || 5000;
 

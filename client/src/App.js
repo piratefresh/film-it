@@ -36,6 +36,8 @@ import EditPostForm from "./components/posts/EditPostForm";
 import Post from "./components/post/Post";
 import Applications from "./components/post/Applications";
 import Login from "./components/auth/Login";
+// TEST
+import Messenger from "./components/real-time-messaging/Messenger";
 // Styling
 import "./App.css";
 import "normalize.css";
@@ -43,14 +45,6 @@ import bgPattern from "./img/svg/topography.svg";
 //Styled Components
 import styled from "styled-components";
 import getCookie from "./components/common/CheckCookie";
-//Socket io
-const io = require("socket.io-client");
-
-const socket = io.connect("http://localhost:5000", () => {
-  socket.on("newMesg", msg => {
-    console.log("message: " + msg);
-  });
-});
 
 const Wrapper = styled.div`
   background-color: #f9f9f9;
@@ -113,6 +107,13 @@ const NoMatch = ({ location }) => (
 
 class App extends Component {
   render() {
+    const { profile, loading } = this.props.profile;
+    let handle;
+    if (profile === null || loading) {
+    } else {
+      handle = profile.handle;
+    }
+
     return (
       <BrowserRouter>
         <div className="App">
@@ -120,6 +121,12 @@ class App extends Component {
             <Navbar />
             <Container>
               <Switch>
+                <PrivateRoute
+                  exact
+                  path="/messenger"
+                  component={Messenger}
+                  name={handle}
+                />
                 <Route exact path="/" component={Posts} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
@@ -184,4 +191,7 @@ const mapStateToProps = state => ({
   profile: state.profile
 });
 
-export default connect(mapStateToProps, { getCurrentProfile })(App);
+export default connect(
+  mapStateToProps,
+  { getCurrentProfile }
+)(App);

@@ -14,6 +14,8 @@ import Experience from "./Experience";
 import UserDetails from "./UserDetails";
 import UserContact from "./UserContact";
 import UserPictures from "./UserPictures";
+// Socket.io
+import { socket } from "../../store";
 
 const ContainerDashboard = styled.div`
   height: 100%;
@@ -56,7 +58,6 @@ class Dashboard extends Component {
   componentDidMount() {
     this.props.getCurrentProfile();
     this.props.getPostsById(this.props.auth.user.id);
-    console.log(this.props.auth.user.id);
   }
 
   onDeleteClick(e) {
@@ -67,8 +68,8 @@ class Dashboard extends Component {
     const { user } = this.props.auth;
     const { profile, loading } = this.props.profile;
     const { posts } = this.props.post;
+
     // Post Map
-    console.log(posts);
     const postContent = posts.map(post => (
       <div>
         <p>{post.title}</p>
@@ -173,9 +174,12 @@ const mapStateToProps = state => ({
   post: state.post
 });
 
-export default connect(mapStateToProps, {
-  getCurrentProfile,
-  deleteAccount,
-  getPostsById,
-  fetchUser
-})(Dashboard);
+export default connect(
+  mapStateToProps,
+  {
+    getCurrentProfile,
+    deleteAccount,
+    getPostsById,
+    fetchUser
+  }
+)(Dashboard);
