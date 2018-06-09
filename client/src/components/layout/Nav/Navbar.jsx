@@ -7,6 +7,12 @@ import {
   clearCurrentProfile,
   getCurrentProfile
 } from "../../../actions/profileActions";
+import {
+  getUnreadMessagesCount,
+  getMessages
+} from "../../../actions/messageActions";
+// Socket.Io
+import { socket } from "../../../store";
 
 const Nav = styled.nav`
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
@@ -41,6 +47,19 @@ const NavLink = styled.a`
   text-decoration: none;
   color: #7d48df;
   vertical-align: middle;
+  position: relative;
+`;
+const MessageCount = styled.span`
+  background-color: #fa3e3e;
+  border-radius: 2px;
+  color: white;
+
+  padding: 3px 5px;
+  font-size: 10px;
+
+  position: absolute; /* Position the badge within the relatively positioned button */
+  top: 0;
+  right: 0;
 `;
 const NavImg = styled.img`
   object-fit: cover;
@@ -49,11 +68,34 @@ const NavImg = styled.img`
   vertical-align: middle;
   border-radius: 50%;
 `;
+const NotifyBubble = styled.div`
+  background: red;
+  height: 15px;
+  width: 15px;
+  border-radius: 15%;
+  position: absolute;
+`;
 
 class Navbar extends Component {
+  constructor(props) {
+    super(props);
+
+    socket.on("addMessage", mesg => {
+      this.props.getMessages();
+      this.props.getCurrentProfile();
+      console.log("added message onSubmit");
+    });
+  }
+
   componentDidMount() {
     this.props.getCurrentProfile();
   }
+
+  componentWillUnmount() {
+    const { profile } = this.props.profile;
+    socket.emit("disconnect", { handle: profile.handle });
+  }
+
   onLogoutClick(e) {
     e.preventDefault();
     this.props.clearCurrentProfile();
@@ -92,6 +134,11 @@ class Navbar extends Component {
           </NavUl>
         );
       } else {
+        // Add user to socket list object
+        socket.emit("addUser", { name: profile.handle });
+        // Sends profile handle to server to check for unread messages
+        socket.emit("checkUnreadMessages", { name: profile.handle });
+
         authLinks = (
           <NavUl>
             <NavLink href="/feed">
@@ -101,6 +148,7 @@ class Navbar extends Component {
               <i class="fas fa-users" />Profiles
             </NavLink>
             <NavLink href="/inbox">
+              <MessageCount>{profile.unreadMessageCount}</MessageCount>
               <i class="fas fa-inbox" />Inbox
             </NavLink>
             <NavLink href="/dashboard">
@@ -116,20 +164,6 @@ class Navbar extends Component {
         );
       }
     }
-
-    /*     const authLinks = (
-      <NavUl>
-        <NavLink href="/posts">
-          <i className="fas fa-tasks" />View Listings
-        </NavLink>
-        <NavLink href="/dashboard">
-          <i className="fas fa-user-plus" />Dashboard
-        </NavLink>
-        <NavLink href="/auth/logout" onClick={this.onLogoutClick.bind(this)}>
-          <i className="fas fa-sign-in-alt" />Logout
-        </NavLink>
-      </NavUl>
-    ); */
 
     const guestLinks = (
       <NavUl>
@@ -165,13 +199,16 @@ Navbar.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   getCurrentProfile: PropTypes.func.isRequired,
   logoutGoogleUser: PropTypes.func.isRequired,
+  getMessages: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  conversations: PropTypes.object.isRequired,
   profile: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  profile: state.profile
+  profile: state.profile,
+  conversations: state.conversations
 });
 
 export default connect(
@@ -180,6 +217,8 @@ export default connect(
     logoutUser,
     logoutGoogleUser,
     getCurrentProfile,
+    getUnreadMessagesCount,
+    getMessages,
     clearCurrentProfile
   }
 )(Navbar);

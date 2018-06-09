@@ -38,6 +38,9 @@ const ProfileSchema = new Schema({
   bio: {
     type: String
   },
+  unreadMessageCount: {
+    type: Number
+  },
   reel: {
     type: String
   },

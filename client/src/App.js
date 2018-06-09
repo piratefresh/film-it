@@ -134,8 +134,8 @@ class App extends Component {
                 <Route exact path="/profile/:handle" component={Profile} />
                 <Route exact path="/feed" component={Posts} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <PrivateRoute exact path="/inbox" component={Inbox} />
-                <PrivateRoute exact path="/inbox/:id" component={Inbox} />
+                <PrivateRoute exact path="/inbox" component={Messenger} />
+                <PrivateRoute exact path="/inbox/:id" component={Messenger} />
                 <PrivateRoute
                   exact
                   path="/create-profile"

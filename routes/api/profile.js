@@ -132,6 +132,7 @@ router.post("/", isAuth, upload.single("avatar"), (req, res) => {
     const profileFields = {};
     // Get user id, email name avatar
     profileFields.user = req.user.id;
+    profileFields.unreadMessageCount = 0;
     if (req.body.avatar) profileFields.avatar = req.body.avatar;
     if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.company) profileFields.company = req.body.company;

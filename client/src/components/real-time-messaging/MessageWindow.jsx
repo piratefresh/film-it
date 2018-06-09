@@ -35,4 +35,7 @@ class MessageWindow extends Component {
   }
 }
 
-export default connect(null, { getMessageById })(MessageWindow);
+export default connect(
+  null,
+  { getMessageById }
+)(MessageWindow);

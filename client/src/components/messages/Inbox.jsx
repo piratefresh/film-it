@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import isEmpty from "../../validation/is-empty";
 // Component
-import InboxChat from "./InboxChat";
-import MessageWindow from "./MessageWindow";
+import InboxChat from "../real-time-messaging/InboxChat";
+import MessageWindow from "../real-time-messaging/MessageWindow";
 // React
 import {
   getMessages,
@@ -198,13 +198,6 @@ class Inbox extends Component {
               onChange={this.handleChange}
               placeholder="Send to"
             />
-            <input
-              id="subject"
-              type="text"
-              placeholder="Subject"
-              name="subject"
-              onChange={this.onChange}
-            />
             <textarea
               id="message"
               placeholder="Type Message here"
@@ -273,9 +266,12 @@ const mapStateToProps = state => ({
   profile: state.profile
 });
 
-export default connect(mapStateToProps, {
-  getMessages,
-  sendMessage,
-  getMessageById,
-  getProfiles
-})(Inbox);
+export default connect(
+  mapStateToProps,
+  {
+    getMessages,
+    sendMessage,
+    getMessageById,
+    getProfiles
+  }
+)(Inbox);

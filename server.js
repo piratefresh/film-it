@@ -18,8 +18,8 @@ const posts = require("./routes/api/posts");
 const messages = require("./routes/api/messages");
 
 const app = express();
-var http = require("http").Server(app);
-var io = require("socket.io")(http);
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
 
 // log every request to the console
 app.use(morgan("dev"));

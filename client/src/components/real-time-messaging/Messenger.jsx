@@ -1,24 +1,82 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { getMessages } from "../../actions/messageActions";
+import { getMessages, getMessageById } from "../../actions/messageActions";
 import Spinner from "../common/Spinner";
+// Components
+import MessageWindow from "./MessageWindow";
+import InboxChat from "./InboxChat";
+// styled components
+import styled from "styled-components";
 import Button from "../common/Button";
-import isEmpty from "../../validation/is-empty";
+import Link from "../common/Link";
 // Socket.io
 import { socket } from "../../store";
-import { runInNewContext } from "vm";
+
+const InboxContainer = styled.div`
+  background: #fff;
+  height: 100%;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: minmax(50px, 1fr) minmax(200px, 3fr);
+  grid-template-rows: 3fr minmax(50px, auto);
+  grid-gap: 5%;
+  grid-template-areas:
+    "list messages"
+    "list textarea";
+  padding: 5%;
+`;
+const InboxList = styled.div`
+  grid-area: list;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  padding: 2% 2%;
+  img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+  }
+`;
+const InboxTypeContainer = styled.div`
+  grid-area: textarea;
+  height: 100%;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  input {
+    width: 100%;
+    border: none;
+    padding: 2% 2%;
+  }
+  textarea {
+    width: 96%;
+    height: 100%;
+    border: none;
+    padding: 2% 2%;
+    resize: vertical;
+  }
+`;
+const ActionsArea = styled.div`
+  margin-left: auto;
+  padding-top: 2%;
+`;
 
 class Messenger extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      makeNewMessage: false,
       currrentMessage: "",
       sender: "",
       recieverHandle: "",
       message: "",
       username: "magnus"
     };
+
+    socket.on("addMessage", mesg => {
+      this.props.getMessages();
+      this.props.getMessageById();
+      console.log("added message onSubmit");
+    });
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -41,10 +99,17 @@ class Messenger extends Component {
     };
     console.log(newMesg);
     socket.emit("privateMessage", newMesg);
+
     socket.on("addMessage", mesg => {
       this.props.getMessages();
-      console.log("added message");
+      console.log("added message onSubmit");
     });
+  }
+
+  onClick(id, e) {
+    e.preventDefault();
+
+    this.props.getMessageById(id);
   }
 
   onChange(e) {
@@ -53,11 +118,6 @@ class Messenger extends Component {
 
   componentDidMount() {
     this.props.getMessages();
-
-    socket.on("addMessage", mesg => {
-      this.props.getMessages();
-      console.log("added message");
-    });
   }
 
   componentDidUpdate(prevProps) {
@@ -69,16 +129,14 @@ class Messenger extends Component {
     }
   }
 
-  componentWillUpdate() {
-    socket.on("addMessage", mesg => {
-      this.props.getMessages();
-      console.log("added message");
-    });
-  }
-
   componentWillUnmount() {
-    socket.on("disconnect", () => {
-      console.log("you have been disconnected");
+    const { profile } = this.props.profile;
+    const reconnection = true,
+      reconnectionDelay = 5000,
+      reconnectionTry = 0;
+    socket.on("disconnect", function() {
+      socket.disconnect();
+      console.log("client disconnected");
     });
   }
 
@@ -92,29 +150,54 @@ class Messenger extends Component {
   }
 
   render() {
-    const { conversations, loading } = this.props.conversations;
+    const { errors, makeNewMessage, recepientHandle } = this.state;
+    const { conversations, loading, currentMessage } = this.props.conversations;
+    const { profile, profiles } = this.props.profile;
 
-    let messageContent;
-    if (conversations === null || loading) {
-      messageContent = <Spinner />;
-    } else {
-      messageContent = conversations.map(chat => {
-        return chat.messages.map(mesg => {
-          return (
-            <div key={chat._id}>
-              <h4>{chat.roomId}</h4>
-              <h5>{mesg.sender}</h5>
-              <p key={mesg._id}>{mesg.message}</p>
-            </div>
-          );
-        });
+    let userHandles = [];
+    if (profiles) {
+      profiles.map(profile => {
+        userHandles.push({ value: profile.handle, label: profile.handle });
       });
     }
+    let inboxListContent;
+    if (conversations === null || loading) {
+      inboxListContent = <Spinner />;
+    } else {
+      if (profile !== null) {
+        inboxListContent = conversations.map(convo => {
+          const avatar = convo.avatars.filter(
+            avatar => !profile.avatar.includes(avatar)
+          );
+          avatar.toString();
+          const sender = convo.participants.filter(
+            sender => !profile.handle.includes(sender)
+          );
+          return (
+            <Link
+              onClick={e => {
+                this.onClick(convo._id, e);
+              }}
+              href={`/inbox/${convo._id}`}
+            >
+              <InboxChat
+                key={convo._id}
+                convo={convo}
+                profile={profile}
+                avatar={avatar}
+                sender={sender}
+              />
+            </Link>
+          );
+        });
+      }
+    }
 
-    return (
-      <div>
-        <h4>Messenger</h4>
-        <form onSubmit={this.onSubmit}>
+    let makeNewMessageInputs;
+    if (!makeNewMessage) {
+    } else {
+      makeNewMessageInputs = (
+        <InboxTypeContainer>
           <label htmlFor="Sender">Reciever</label>
           <input
             id="recieverHandle"
@@ -132,9 +215,30 @@ class Messenger extends Component {
             onChange={this.onChange}
           />
           <Button style={{ width: "50px" }}>Send</Button>
-        </form>
-        {messageContent}
-      </div>
+        </InboxTypeContainer>
+      );
+    }
+
+    return (
+      <InboxContainer>
+        <InboxList>
+          <Button
+            onClick={e => {
+              e.preventDefault();
+              this.setState(prevState => ({
+                makeNewMessage: !prevState.makeNewMessage
+              }));
+            }}
+          >
+            <i className="fas fa-envelope-open" /> New Message
+          </Button>
+          <h4>Inbox</h4>
+          {inboxListContent}
+        </InboxList>
+        <h4>Messenger</h4>
+        <MessageWindow currentMessage={currentMessage} />
+        <form onSubmit={this.onSubmit}>{makeNewMessageInputs}</form>
+      </InboxContainer>
     );
   }
 }
@@ -154,5 +258,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getMessages }
+  { getMessages, getMessageById }
 )(Messenger);

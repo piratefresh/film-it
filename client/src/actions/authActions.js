@@ -80,6 +80,8 @@ export const fetchUser = () => async dispatch => {
 export const loginGoogleUser = () => dispatch => {
   // Get Cookie JWTTOKEN
   const token = getCookie("jwtToken");
+  // set token to LS
+  localStorage.setItem("jwtToken", token);
   // Set token to Auth Header
   setAuthToken(token);
   // Decode token to get user data

@@ -4,6 +4,7 @@ import {
   MESSAGES_LOADING,
   GET_ERRORS,
   GET_CURRENT_MESSAGE,
+  GET_UNREAD_MESSAGE_COUNT,
   SEND_MESSAGE
 } from "./types";
 
@@ -24,6 +25,19 @@ export const getMessages = () => dispatch => {
         payload: {}
       })
     );
+};
+
+// Get Unread messages count
+export const getUnreadMessagesCount = data => dispatch => {
+  dispatch({
+    type: GET_UNREAD_MESSAGE_COUNT,
+    payload: data.count
+  }).catch(err =>
+    dispatch({
+      type: GET_UNREAD_MESSAGE_COUNT,
+      payload: {}
+    })
+  );
 };
 
 // Get message by id
