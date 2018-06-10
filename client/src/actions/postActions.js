@@ -67,6 +67,25 @@ export const getPosts = () => dispatch => {
     );
 };
 
+// Get Posts
+export const getPostsBySearch = query => dispatch => {
+  dispatch(setPostLoading);
+  axios
+    .get(`/api/posts?search=${query}`)
+    .then(res =>
+      dispatch({
+        type: GET_POSTS,
+        payload: res.data
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_POSTS,
+        payload: null
+      })
+    );
+};
+
 // Get Posts by user
 export const getPostsById = id => dispatch => {
   dispatch(setPostLoading);

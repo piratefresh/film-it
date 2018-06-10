@@ -72,9 +72,8 @@ class Messenger extends Component {
       username: "magnus"
     };
 
-    socket.on("addMessage", mesg => {
+    socket.on("addMessage", () => {
       this.props.getMessages();
-      this.props.getMessageById();
       console.log("added message onSubmit");
     });
 
@@ -108,8 +107,15 @@ class Messenger extends Component {
 
   onClick(id, e) {
     e.preventDefault();
+    e.stopPropagation();
 
+    console.log(id);
     this.props.getMessageById(id);
+
+    socket.on("addMessage", mesg => {
+      this.props.getMessageById(id);
+      console.log("added message onSubmit");
+    });
   }
 
   onChange(e) {
@@ -117,7 +123,10 @@ class Messenger extends Component {
   }
 
   componentDidMount() {
+    const { conversations, loading } = this.props.conversations;
+
     this.props.getMessages();
+    console.log(conversations);
   }
 
   componentDidUpdate(prevProps) {
@@ -219,6 +228,11 @@ class Messenger extends Component {
       );
     }
 
+    let messageWindowContent;
+    if (currentMessage !== null) {
+      messageWindowContent = <MessageWindow currentMessage={currentMessage} />;
+    }
+
     return (
       <InboxContainer>
         <InboxList>
@@ -235,8 +249,8 @@ class Messenger extends Component {
           <h4>Inbox</h4>
           {inboxListContent}
         </InboxList>
-        <h4>Messenger</h4>
-        <MessageWindow currentMessage={currentMessage} />
+
+        {messageWindowContent}
         <form onSubmit={this.onSubmit}>{makeNewMessageInputs}</form>
       </InboxContainer>
     );

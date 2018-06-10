@@ -18,7 +18,6 @@ class InboxChat extends Component {
   render() {
     const { messages } = this.props.convo;
     const lastMessage = messages[messages.length - 1];
-    console.log(lastMessage);
 
     return (
       <div>

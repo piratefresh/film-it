@@ -50,15 +50,19 @@ router.get("/", (req, res) => {
   let q = {};
   if (req.query.search) {
     q.search = req.query.search;
-    Post.find({ $text: { $search: q.search } })
+    Post.find(
+      { $text: { $search: q.search } },
+      { score: { $meta: "textScore" } }
+    )
+      .sort({ score: { $meta: "textScore" } })
+      .then(posts => res.json(posts))
+      .catch(err => res.status(404).json({ nopostsfound: "No posts found" }));
+  } else {
+    Post.find()
       .sort({ date: -1 })
       .then(posts => res.json(posts))
       .catch(err => res.status(404).json({ nopostsfound: "No posts found" }));
   }
-  Post.find()
-    .sort({ date: -1 })
-    .then(posts => res.json(posts))
-    .catch(err => res.status(404).json({ nopostsfound: "No posts found" }));
 });
 
 router.get("/:id", (req, res) => {

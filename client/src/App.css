@@ -3,6 +3,13 @@
   margin: 0;
 }
 
+body {
+  font-family: Open Sans, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* .container-dashboard {
   height: 100%;
   padding: 5% 5%;

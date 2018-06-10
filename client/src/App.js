@@ -38,6 +38,7 @@ import Applications from "./components/post/Applications";
 import Login from "./components/auth/Login";
 // TEST
 import Messenger from "./components/real-time-messaging/Messenger";
+import MessageWindow from "./components/real-time-messaging/MessageWindow";
 // Styling
 import "./App.css";
 import "normalize.css";
@@ -135,7 +136,11 @@ class App extends Component {
                 <Route exact path="/feed" component={Posts} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
                 <PrivateRoute exact path="/inbox" component={Messenger} />
-                <PrivateRoute exact path="/inbox/:id" component={Messenger} />
+                <PrivateRoute
+                  exact
+                  path="/inbox/:id"
+                  component={MessageWindow}
+                />
                 <PrivateRoute
                   exact
                   path="/create-profile"

@@ -163,9 +163,8 @@ const socket = io => {
 
     // Read Message
     socket.on("readMessage", mesg => {
-      const convoId = mesg.chatId;
       Conversation.findOneAndUpdate(
-        { _id: mesg.chatId, "messages._id": mesg.id },
+        { "messages._id": mesg.id },
         { $set: { "messages.$.read": true } },
         { new: true }
       ).exec(function(err, user) {});

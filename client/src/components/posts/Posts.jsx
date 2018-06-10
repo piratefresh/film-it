@@ -1,8 +1,12 @@
 import React, { Component } from "react";
+// Redux
 import { connect } from "react-redux";
-import { getPosts } from "../../actions/postActions";
+import { getPosts, getPostsBySearch } from "../../actions/postActions";
+// Components
 import PostFeed from "./PostFeed";
 import PropTypes from "prop-types";
+import TopBar from "./TopBar";
+// Styled Components
 import Spinner from "../common/Spinner";
 import Button from "../common/Button";
 import Link from "../common/Link";
@@ -13,12 +17,6 @@ const JobTypes = styled.div`
   justify-content: space-between;
   padding: 10px;
   margin-bottom: 2%;
-  li {
-    padding: 10px;
-    list-style: none;
-    background: #fff;
-    cursor: pointer;
-  }
 `;
 const Search = styled.div`
   justify-content: center;
@@ -46,15 +44,32 @@ const SearchBar = styled.input`
 `;
 
 class Posts extends Component {
-  state = {
-    keywords: "",
-    city: "",
-    state: "",
-    jobType: ""
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: ""
+    };
+
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
+
   componentDidMount() {
     this.props.getPosts();
   }
+
+  onSubmit(e) {
+    e.preventDefault();
+    const keyword = this.state.query;
+    console.log(keyword);
+    this.props.getPostsBySearch(keyword);
+  }
+
+  onChange(e) {
+    console.log(e.target.value);
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
   render() {
     const { posts, loading } = this.props.post;
     let postContent;
@@ -65,30 +80,19 @@ class Posts extends Component {
     }
     return (
       <div>
-        <JobTypes>
-          <li>
-            <a>Acting</a>
-          </li>
-          <li>
-            <a>Production</a>
-          </li>
-          <li>
-            <a>Pre-Production</a>
-          </li>
-          <li>
-            <a>Camera/Lightning</a>
-          </li>
-          <li>
-            <a>Sound</a>
-          </li>
-          <li>
-            <a>VFX/Stunt</a>
-          </li>
-        </JobTypes>
-        <Search>
-          <Icon type="button" className="fa fa-search fa-2x" />
-          <SearchBar placeholder="Keyword (eg. city, state, name, tags)" />
-        </Search>
+        <TopBar onChange={this.onChange} query={this.state.query} />
+        <form onSubmit={this.onSubmit}>
+          <Search>
+            <Icon type="button" className="fa fa-search fa-2x" />
+            <SearchBar
+              id="query"
+              name="query"
+              value={this.state.query}
+              onChange={this.onChange}
+              placeholder="Keyword (eg. city, state, name, tags)"
+            />
+          </Search>
+        </form>
         <Link href="/add-post">
           <Button>Add Post</Button>
         </Link>
@@ -100,11 +104,15 @@ class Posts extends Component {
 
 Posts.propTypes = {
   post: PropTypes.object.isRequired,
-  getPosts: PropTypes.func.isRequired
+  getPosts: PropTypes.func.isRequired,
+  getPostsBySearch: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   post: state.post
 });
 
-export default connect(mapStateToProps, { getPosts })(Posts);
+export default connect(
+  mapStateToProps,
+  { getPosts, getPostsBySearch }
+)(Posts);
