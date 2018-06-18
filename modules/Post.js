@@ -14,6 +14,11 @@ const PostSchema = new Schema(
       required: true,
       index: false
     },
+    handle: {
+      type: String,
+      required: true,
+      max: 40
+    },
     name: {
       type: String,
       required: true

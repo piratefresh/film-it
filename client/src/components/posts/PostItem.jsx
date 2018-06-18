@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import Moment from "react-moment";
 import isEmpty from "../../validation/is-empty";
+import ShortenString from "../common/ShortenString";
 // Styled Components
 import styled from "styled-components";
 import Link from "../common/Link";
@@ -14,9 +15,18 @@ const PostCard = styled.div`
   margin: 60px 0;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
   display: grid;
-  grid-template-rows: auto 150px auto;
+  grid-template-rows: minmax(30px, 75px) 150px auto;
   grid-gap: 20px;
   background: #fff;
+  font-size: 0.8rem;
+  @media (max-width: 800px) {
+   width: 100%;
+  }}
+  @media (max-width: 600px) {
+    height: 100%;
+   width: 100%;
+   margin: 10% 0;
+  }}
 `;
 const PostCardTitle = styled.div`
   display: grid;
@@ -47,13 +57,22 @@ const PostCardTitleDate = styled.div`
   justify-self: end;
 `;
 const PostCardContent = styled.div`
-  padding: 10px;
+  padding: 1%;
   font-weight: 200;
   font-family: "Open Sans", sans-serif;
   a {
     font-size: 0.8rem;
     font-weight: 100;
   }
+  @media (max-width: 800px) {
+   width: 100%;
+  }}
+  @media (max-width: 600px) {
+   width: 100%;
+   p{
+     padding: 0 5%;
+   }
+  }}
 `;
 const PostCardFooter = styled.div`
   display: grid;
@@ -78,12 +97,36 @@ const PostCardFooter = styled.div`
   p {
     font-size: 0.9rem;
   }
+
+    @media (max-width: 800px) {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }}
+  @media (max-width: 600px) {
+    margin-top: 5%;
+  }
+`;
+const TagsWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 400px) {
+    display: flex;
+    flex-direction: column;
+  }
+`;
+const StyledTags = styled.div`
+margin: 0 2%;
+      @media (max-width: 800px) {
+        margin: 2% 0;
+  }}
 `;
 
 class PostItem extends Component {
   state = {
     isOpen: false
   };
+  tagButton = React.createRef();
 
   toggleModal = e => {
     e.preventDefault(e);
@@ -94,14 +137,22 @@ class PostItem extends Component {
   render() {
     const { post, profile, auth } = this.props;
     const tags = post.tags.map((tag, index) => (
-      <Button key={index} style={{ background: "#fdca1e", margin: "0 2%" }}>
-        {tag}
-      </Button>
+      <StyledTags>
+        <Button
+          key={index}
+          style={{ background: "#fdca1e", margin: "0 2%", cursor: "auto" }}
+          innerRef={this.tagButton}
+        >
+          <p>{tag}</p>
+        </Button>
+      </StyledTags>
     ));
     return (
       <PostCard>
         <PostCardTitle>
-          <img src={post.avatar} alt="user avatar" />
+          <Link href={`/profile/${post.handle}`}>
+            <img src={post.avatar} alt="user avatar" />
+          </Link>
           <div>
             <h3>{post.title}</h3>
             <p>
@@ -131,7 +182,8 @@ class PostItem extends Component {
           </PostCardTitleDate>{" "}
         </PostCardTitle>
         <PostCardContent>
-          {post.desc}
+          {/* trunc = ShortenString */}
+          <p>{post.desc.trunc(350)}</p>
           <Link href={`/post/${post._id}`}>
             <Button style={{ margin: "0 5%" }}>Read More</Button>
           </Link>
@@ -155,7 +207,7 @@ class PostItem extends Component {
               Budget: <strong>{isEmpty(post.budget) ? "" : post.budget}</strong>
             </p>
           </div>
-          <div className="tags">{tags}</div>
+          <TagsWrapper>{tags}</TagsWrapper>
         </PostCardFooter>
       </PostCard>
     );

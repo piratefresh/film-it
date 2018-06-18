@@ -15,6 +15,8 @@ import { withStyles } from "@material-ui/core/styles";
 import FormCard from "../common/FormCard";
 import Button from "../common/Button";
 import Link from "../common/Link";
+//Components
+import RoleInputs from "./RoleInputs";
 
 const styles = {
   root: {
@@ -46,8 +48,8 @@ class PostForm extends Component {
       city: "",
       state: "",
       desc: "",
-      seekingDesc: [],
-      seekingRole: [],
+      roleDesc: [],
+      roleTitles: [],
       budget: "",
       tags: "",
       start: "",
@@ -57,6 +59,7 @@ class PostForm extends Component {
     };
 
     this.onChange = this.onChange.bind(this);
+    this.onChangeSeeking = this.onChangeSeeking.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
 
@@ -80,14 +83,15 @@ class PostForm extends Component {
 
     const newPost = new FormData();
     newPost.append("avatar", profile.avatar);
+    newPost.append("handle", profile.handle);
     newPost.append("name", user.name);
     newPost.append("title", this.state.title);
     newPost.append("city", this.state.city);
     newPost.append("state", this.state.state);
     newPost.append("company", this.state.company);
     newPost.append("desc", this.state.desc);
-    newPost.append("seekingDesc", this.state.seekingDesc);
-    newPost.append("seekingRole", this.state.seekingRole);
+    newPost.append("roleTitles", this.state.roleTitles);
+    newPost.append("roleDesc", this.state.roleDesc);
     newPost.append("start", this.state.start);
     newPost.append("end", this.state.end);
     newPost.append("jobType", this.state.jobType);
@@ -101,120 +105,19 @@ class PostForm extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  changeRole = i => e => {
-    let seekingRole = [...this.state.seekingRole];
-    seekingRole[i] = e.target.value;
+  onChangeSeeking(titles, desc) {
+    const { roleTitles, roleDesc } = this.state;
+    console.log(titles, desc);
     this.setState({
-      seekingRole
+      roleTitles: titles,
+      roleDesc: desc
     });
-  };
-  changeDesc = i => e => {
-    let seekingDesc = [...this.state.seekingDesc];
-    seekingDesc[i] = e.target.value;
-    this.setState({
-      seekingDesc
-    });
-  };
-
-  handleDeleteRole = i => e => {
-    e.preventDefault();
-    let seekingRole = [
-      ...this.state.seekingRole.slice(0, i),
-      ...this.state.seekingRole.slice(i + 1)
-    ];
-    this.setState({
-      seekingRole
-    });
-  };
-
-  handleDeleteDesc = i => e => {
-    e.preventDefault();
-    let seekingDesc = [
-      ...this.state.seekingDesc.slice(0, i),
-      ...this.state.seekingDesc.slice(i + 1)
-    ];
-    this.setState({
-      seekingDesc
-    });
-  };
-
-  addInput = e => {
-    e.preventDefault();
-    let seekingRole = this.state.seekingRole.concat([""]);
-    let seekingDesc = this.state.seekingDesc.concat([""]);
-    this.setState({
-      seekingRole,
-      seekingDesc
-    });
-  };
+  }
 
   render() {
     const { errors } = this.state;
     const { classes } = this.props;
 
-    let seekingContent = (
-      <div>
-        {this.state.seekingRole.map((role, index) => (
-          <span key={index}>
-            <TextField
-              id="seekingRole"
-              label="Title of Role"
-              margin="normal"
-              name="seekingRole"
-              onChange={this.changeRole(index)}
-              value={role}
-              fullWidth={true}
-              helperText={errors.title}
-              FormHelperTextProps={{
-                classes: {
-                  root: classes.label
-                }
-              }}
-              InputProps={{
-                classes: {
-                  underline: classes.underline
-                }
-              }}
-              InputLabelProps={{
-                shrink: true
-              }}
-              required
-            />
-          </span>
-        ))}
-        {this.state.seekingDesc.map((desc, index) => (
-          <span key={index}>
-            <TextField
-              id="seekingDesc"
-              label="Describe the role"
-              margin="normal"
-              name="seekingDesc"
-              type="text"
-              multiline
-              rows="10"
-              onChange={this.changeDesc(index)}
-              value={desc}
-              fullWidth={true}
-              helperText={errors.title}
-              FormHelperTextProps={{
-                classes: {
-                  root: classes.label
-                }
-              }}
-              InputProps={{
-                classes: {
-                  underline: classes.underline
-                }
-              }}
-              InputLabelProps={{
-                shrink: true
-              }}
-            />
-          </span>
-        ))}
-        <Button onClick={this.addInput}>Add Role Description</Button>
-      </div>
-    );
     return (
       <div>
         <form onSubmit={this.onSubmit}>
@@ -431,7 +334,7 @@ class PostForm extends Component {
               }}
               required
             />
-            {seekingContent}
+            <RoleInputs getState={this.onChangeSeeking} />
             <TextField
               id="image"
               label="Profile Picture"
@@ -528,6 +431,7 @@ const mapStateToProps = state => ({
 
 const styledComponent = withStyles(styles)(PostForm);
 
-export default connect(mapStateToProps, { addPost })(
-  withRouter(styledComponent)
-);
+export default connect(
+  mapStateToProps,
+  { addPost }
+)(withRouter(styledComponent));

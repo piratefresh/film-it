@@ -7,12 +7,8 @@ import Link from "../common/Link";
 import { deletePost } from "../../actions/postActions";
 
 const PostDetails = styled.div`
-  ::after {
-    content: "";
-    display: block;
-    border-bottom: 3px solid #7d48df;
-    margin: 1% 0;
-  }
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  padding: 5%;
   p {
     font-size: 0.8rem;
   }
@@ -32,7 +28,7 @@ class PostHistoryItem extends Component {
   }
   render() {
     const { post } = this.props;
-    console.log(post + " post history item");
+
     return (
       <PostDetails>
         <div className="post-title">
@@ -63,4 +59,7 @@ PostHistoryItem.propTypes = {
   deletePost: PropTypes.func.isRequired
 };
 
-export default connect(null, { deletePost })(PostHistoryItem);
+export default connect(
+  null,
+  { deletePost }
+)(PostHistoryItem);

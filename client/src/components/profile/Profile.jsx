@@ -38,9 +38,9 @@ class Profile extends Component {
     }
   }
   render() {
-    const { profile, loading } = this.props.profile;
+    const { profile, loading, profileHandle } = this.props.profile;
     let profileContent;
-    if (profile === null || loading) {
+    if (profileHandle === null || loading) {
       profileContent = <Spinner />;
     } else {
       profileContent = (
@@ -49,14 +49,14 @@ class Profile extends Component {
             <Button>Back to Profiles</Button>
           </Link>
           <ProfileContainer>
-            <ProfileAvatar src={profile.avatar} />
+            <ProfileAvatar src={profileHandle.avatar} />
             <div className="profile-content">
-              <ProfileHeader profile={profile} />
-              <ProfileAbout profile={profile} />
+              <ProfileHeader profileHandle={profileHandle} />
+              <ProfileAbout profileHandle={profileHandle} />
             </div>
           </ProfileContainer>
-          <ProfileGallery gallery={profile.gallery} />
-          <ProfileCreds experience={profile.experience} />
+          <ProfileGallery gallery={profileHandle.gallery} />
+          <ProfileCreds experience={profileHandle.experience} />
         </div>
       );
     }
@@ -65,7 +65,7 @@ class Profile extends Component {
 }
 
 Profile.propTypes = {
-  profile: PropTypes.object.isRequired,
+  profileHandle: PropTypes.object.isRequired,
   getProfileByHandle: PropTypes.func.isRequired
 };
 
@@ -73,4 +73,7 @@ const mapStateToProps = state => ({
   profile: state.profile
 });
 
-export default connect(mapStateToProps, { getProfileByHandle })(Profile);
+export default connect(
+  mapStateToProps,
+  { getProfileByHandle }
+)(Profile);

@@ -5,11 +5,22 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 
 const UserContactContainer = styled.div`
-  &:after {
-    content: "";
-    display: block;
-    margin: 3% 0;
-    border-bottom: 3px solid #7d48df;
+  margin: 10% 5%;
+  width: 100%;
+  p {
+    margin: 5% 0;
+  }
+  @media (max-width: 650px) {
+    margin: 0;
+  }
+`;
+const ContactItem = styled.div`
+  width: 100%;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  @media (max-width: 650px) {
+    justify-content: center;
   }
 `;
 
@@ -19,19 +30,17 @@ class UserContact extends Component {
     const user = this.props.user;
     return (
       <UserContactContainer>
-        <p>
-          Email: <strong>{user.email}</strong>
-        </p>
-        <p>
-          Location: <strong>{profile.city}</strong>,{" "}
-          <strong>{profile.state}</strong>{" "}
-        </p>
-        <p>
-          Website:{" "}
-          <strong>
-            {profile.website === null ? "None " : profile.website}
-          </strong>
-        </p>
+        <ContactItem>
+          <p>{user.email}</p>
+        </ContactItem>
+        <ContactItem>
+          <p>
+            {profile.city}, {profile.state}{" "}
+          </p>
+        </ContactItem>
+        <ContactItem>
+          <p>{profile.website === null ? "None " : profile.website}</p>
+        </ContactItem>
       </UserContactContainer>
     );
   }

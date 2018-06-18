@@ -8,6 +8,31 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f9f9f9;
+  background-image: url("img/svg/topography.svg");
+}
+
+.formInput {
+  border: 1px solid #ccc;
+  padding: 7px 14px 9px;
+  transition: 0.4s;
+  background: rgba(96, 111, 123, 0.1);
+  margin-bottom: 10%;
+  margin-top: 3%;
+}
+.formInput:after {
+  display: block;
+  content: "need text here to prevent subpixel zoom issue";
+  border-bottom: 2px solid #7d48df;
+  outline: none;
+  transform: scaleX(0);
+  transition: transform 250ms ease-in-out;
+}
+.formInput:focus:after {
+  transform: scaleX(1);
+}
+.formInput:invalid {
+  border: 2px solid #fa3e3e;
 }
 
 /* .container-dashboard {

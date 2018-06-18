@@ -65,9 +65,24 @@ router.get("/", (req, res) => {
   }
 });
 
+// @route   Get api/posts/:id
+// @desc    Get Post by user id
+// @access  Public
 router.get("/:id", (req, res) => {
-  Post.find({ user: req.params.id })
-    .sort([["_id", -1]])
+  Post.find({ user: req.user.id })
+    .sort({ date: -1 })
+    .then(posts => res.json(posts))
+    .catch(err =>
+      res.status(404).json({ nopostfound: "Couldn't update that post" })
+    );
+});
+
+// @route   Get api/posts/post/:id
+// @desc    Get Post by post id
+// @access  Public
+router.get("/post/:id", (req, res) => {
+  Post.findOne({ _id: req.params.id })
+    .sort({ date: -1 })
     .then(posts => res.json(posts))
     .catch(err =>
       res.status(404).json({ nopostfound: "Couldn't update that post" })
@@ -86,6 +101,7 @@ router.put("/:id/edit", isAuth, (req, res) => {
   }
   updatePost = {
     user: req.user.id,
+    handle: req.body.handle,
     name: req.body.name,
     avatar: req.body.avatar,
     title: req.body.title,
@@ -126,6 +142,7 @@ router.post("/", isAuth, upload.single("image"), (req, res) => {
     const newPost = new Post({
       user: req.user.id,
       name: req.body.name,
+      handle: req.body.handle,
       image: req.body.image,
       image_id: req.body.image_id,
       avatar: req.body.avatar,

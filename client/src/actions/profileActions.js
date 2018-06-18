@@ -2,6 +2,7 @@ import axios from "axios";
 
 import {
   GET_PROFILE,
+  GET_PROFILE_HANDLE,
   GET_PROFILES,
   PROFILE_LOADING,
   CLEAR_CURRENT_PROFILE,
@@ -9,19 +10,6 @@ import {
 } from "./types";
 
 import { logoutUser } from "./authActions";
-
-/* // Get current profile
-export const getCurrentProfile = () => async dispatch => {
-  dispatch(setProfileLoading());
-  const res = await axios.get("/api/profile");
-
-  dispatch({ type: GET_PROFILE, payload: res.data }).catch(err =>
-    dispatch({
-      type: GET_PROFILE,
-      payload: {}
-    })
-  );
-}; */
 
 // Get current profile
 export const getCurrentProfile = () => dispatch => {
@@ -49,13 +37,13 @@ export const getProfileByHandle = handle => dispatch => {
     .get(`/api/profile/handle/${handle}`)
     .then(res =>
       dispatch({
-        type: GET_PROFILE,
+        type: GET_PROFILE_HANDLE,
         payload: res.data
       })
     )
     .catch(err =>
       dispatch({
-        type: GET_PROFILE,
+        type: GET_PROFILE_HANDLE,
         payload: null
       })
     );
@@ -152,9 +140,7 @@ export const deleteGalleryPicture = (id, cloudinary_id) => async dispatch => {
 
 // Delete Picture from cloud
 export const deletePictureFromCloud = id => dispatch => {
-  axios
-    .post("/api/profile/profile-gallery/delete", id)
-    .then(res => console.log("deleting " + id));
+  axios.post("/api/profile/profile-gallery/delete", id);
 };
 
 // Delete Experience

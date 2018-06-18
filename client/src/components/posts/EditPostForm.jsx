@@ -121,6 +121,7 @@ class EditPostForm extends Component {
 
     const editPost = new FormData();
     editPost.append("avatar", profile.avatar);
+    editPost.append("handle", profile.handle);
     editPost.append("name", user.name);
     editPost.append("title", this.state.title);
     editPost.append("city", this.state.city);
@@ -559,6 +560,7 @@ const mapStateToProps = state => ({
 
 const styledComponent = withStyles(styles)(EditPostForm);
 
-export default connect(mapStateToProps, { editPost, getPost })(
-  withRouter(styledComponent)
-);
+export default connect(
+  mapStateToProps,
+  { editPost, getPost }
+)(withRouter(styledComponent));

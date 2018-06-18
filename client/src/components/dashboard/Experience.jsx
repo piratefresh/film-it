@@ -12,6 +12,7 @@ import Moment from "react-moment";
 
 const UserExperienceContainer = styled.div`
   margin: 3% 0;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
 `;
 const ExperienceDetails = styled.div`
   background: #e2eef0;
@@ -77,7 +78,7 @@ class Experience extends Component {
         </h4>
         {experience}
         <Link href="add-experience">
-          <Button>Add Experience</Button>
+          <Button style={{ fontSize: "0.6rem" }}>Add Experience</Button>
         </Link>
       </UserExperienceContainer>
     );
@@ -88,4 +89,7 @@ Experience.propTypes = {
   deleteExperience: PropTypes.func.isRequired
 };
 
-export default connect(null, { deleteExperience })(Experience);
+export default connect(
+  null,
+  { deleteExperience }
+)(Experience);

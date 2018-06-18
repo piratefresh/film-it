@@ -11,6 +11,9 @@ const FormCard = styled.div`
   background: #fff;
   width: 270px;
   margin: 5% auto;
+  input {
+    box-sizing: border-box;
+  }
 `;
 
 export default FormCard;

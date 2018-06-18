@@ -13,35 +13,12 @@ const ContainerProfiles = styled.div`
   margin: 10% 0;
   display: flex;
   flex-wrap: wrap;
-`;
-const ProfileCard = styled.div`
-  display: inline-block;
-  position: relative;
-  margin-bottom: 15%;
-  margin-left: 10%;
-  width: 300px;
-  height: 100%;
-  background: #fff;
-  padding: 2%;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
-`;
-const CardHeader = styled.div`
-  position: relative;
-  height: 200px;
-  > img {
-    height: 300px;
-    width: 270px;
-    object-fit: cover;
-    position: absolute;
-    top: -112px;
-    left: 50%;
-    transform: translateX(-50%);
+  @media (max-width: 1000px) {
+    margin-top: 20%;
   }
-`;
-const CardContent = styled.div`
-  position: relative;
-  clear: both;
-  font-size: 0.8rem;
+  @media (max-width: 600px) {
+    margin-top: 30%;
+  }
 `;
 
 class Profiles extends Component {
@@ -75,4 +52,7 @@ const mapStateToProps = state => ({
   profile: state.profile
 });
 
-export default connect(mapStateToProps, { getProfiles })(Profiles);
+export default connect(
+  mapStateToProps,
+  { getProfiles }
+)(Profiles);

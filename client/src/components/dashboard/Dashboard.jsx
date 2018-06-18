@@ -28,14 +28,46 @@ const ContainerDashboard = styled.div`
     "details posts posts"
     "exp exp exp"
     "reel reel reel";
+  grid-gap: 5%;
   border-radius: 10px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  p {
+    font-size: 0.8rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  @media (max-width: 1000px) {
+    grid-template-columns: minmax(250px, 1fr);
+    margin: 5% auto;
+    padding: 0;
+    grid-gap: 0;
+  }
+  @media (max-width: 650px) {
+    grid-template-areas:
+      "header"
+      "details"
+      "posts"
+      "exp"
+      "reel";
+    width: 100%;
+  }
 `;
 const DashboardTitle = styled.div`
   grid-area: header;
   margin-bottom: 5%;
   display: flex;
   flex-direction: column;
+  h4 {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+  }
+  @media (max-width: 650px) {
+    padding: 5% 5%;
+    h4 {
+      display: block;
+    }
+  }
 `;
 const ProfileButtons = styled.div``;
 const DashboardDetails = styled.div`
@@ -43,15 +75,23 @@ const DashboardDetails = styled.div`
   grid-template-rows: repeat(auto-fit, 1fr);
   height: 100%;
   margin-right: 10%;
+  width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  @media (max-width: 650px) {
+    width: 100%;
+  }
 `;
 const PostHistory = styled.div`
   grid-area: posts;
+  margin: 5% 0;
 `;
 const DashboardExp = styled.div`
   grid-area: exp;
+  margin: 5% 0;
 `;
 const DashboardReel = styled.div`
   grid-area: reel;
+  margin: 5% 0;
 `;
 
 class Dashboard extends Component {
@@ -72,7 +112,6 @@ class Dashboard extends Component {
     // Post Map
     const postContent = posts.map(post => (
       <div>
-        <p>{post.title}</p>
         <PostHistoryItem key={post._id} post={post} user={user} />
       </div>
     ));
@@ -85,13 +124,7 @@ class Dashboard extends Component {
         dashboardContent = (
           <ContainerDashboard>
             <DashboardTitle>
-              <h4
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignContent: "center"
-                }}
-              >
+              <h4 style={{}}>
                 Welcome{" "}
                 <Link
                   href={`/profile/${profile.handle}`}
@@ -134,7 +167,10 @@ class Dashboard extends Component {
             </DashboardReel>
             <ProfileButtons>
               <Link>
-                <Button onClick={this.onDeleteClick.bind(this)}>
+                <Button
+                  style={{ fontSize: "0.6rem" }}
+                  onClick={this.onDeleteClick.bind(this)}
+                >
                   Delete My Account
                 </Button>
               </Link>

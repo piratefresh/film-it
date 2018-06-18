@@ -14,6 +14,12 @@ const LastMessage = styled.div`
   }
 `;
 
+String.prototype.trunc =
+  String.prototype.trunc ||
+  function(n) {
+    return this.length > n ? this.substr(0, n - 1) : this;
+  };
+
 class InboxChat extends Component {
   render() {
     const { messages } = this.props.convo;
@@ -27,7 +33,7 @@ class InboxChat extends Component {
           </div>
           <LastMessage>
             <h4>{this.props.sender}</h4>
-            <p>{lastMessage.message}</p>
+            <p>{lastMessage.message.trunc(50)}</p>
           </LastMessage>
         </ChatItem>
         <p />

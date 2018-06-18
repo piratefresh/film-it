@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { deleteGalleryPicture } from "../../actions/profileActions";
+import axios from "axios";
+import {
+  deleteGalleryPicture,
+  deletePictureFromCloud
+} from "../../actions/profileActions";
 // Styled Components
 import styled from "styled-components";
 import Button from "../common/Button";
@@ -10,22 +14,24 @@ import Link from "../common/Link";
 const UserPicturesContainer = styled.div`
   display: grid;
   grid-template-rows: repeat(auto-fit, 1fr);
-  margin-right: 10%;
-
-  &:after {
-    content: "";
-    display: block;
-    margin: 3% 0;
-    border-bottom: 3px solid #7d48df;
+  h4 {
+    text-align: center;
+  }
+  @media (max-width: 650px) {
+    padding: 0 5%;
+    margin-right: 0;
   }
 `;
 const GalleryContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+  align-items: center;
 `;
 const ImageContainer = styled.div`
   padding: 2% 2%;
+  position: relative;
+  display: inline-block;
 `;
 const GalleryImg = styled.img`
   height: 100px;
@@ -33,31 +39,29 @@ const GalleryImg = styled.img`
   object-fit: cover;
   position: relative;
 `;
+const ButtonCross = styled.button`
+  border: none;
+  outline: none;
+  right: 0;
+  top: 0;
+  position: absolute;
+  cursor: pointer;
+`;
 
 class UserPictures extends Component {
-  onDeleteClick(id, cloudinary_id) {
-    this.props.deleteGalleryPicture(id, cloudinary_id);
+  onDeleteClick(id, imageId) {
+    this.props.deleteGalleryPicture(id, imageId);
+    axios.post("/api/profile/profile-gallery/delete", { imageId });
   }
   render() {
     const gallery = this.props.gallery.map(image => (
       <ImageContainer key={image._id}>
-        <div>
-          <GalleryImg src={image.image} style={{ gridArea: "img" }} />
-        </div>
-        <div>
-          {console.log(image.image_id)}
-          <Button
-            onClick={this.onDeleteClick.bind(this, image._id, image.image_id)}
-            style={{
-              background: "#fd381e",
-              width: "70px",
-              gridArea: "btn",
-              position: "relative"
-            }}
-          >
-            Delete
-          </Button>
-        </div>
+        <GalleryImg src={image.image} />
+        <ButtonCross
+          onClick={this.onDeleteClick.bind(this, image._id, image.image_id)}
+        >
+          <i class="fas fa-minus-square" />
+        </ButtonCross>
       </ImageContainer>
     ));
     return (
@@ -65,11 +69,14 @@ class UserPictures extends Component {
         <h4>Gallery</h4>
         <GalleryContainer>{gallery}</GalleryContainer>
         <Link href="/profile-gallery">
-          <Button>Add Image</Button>
+          <Button style={{ fontSize: "0.6rem" }}>Add Image</Button>
         </Link>
       </UserPicturesContainer>
     );
   }
 }
 
-export default connect(null, { deleteGalleryPicture })(UserPictures);
+export default connect(
+  null,
+  { deleteGalleryPicture, deletePictureFromCloud }
+)(UserPictures);

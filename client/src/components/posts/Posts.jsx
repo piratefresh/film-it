@@ -12,15 +12,8 @@ import Button from "../common/Button";
 import Link from "../common/Link";
 import styled from "styled-components";
 
-const JobTypes = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  margin-bottom: 2%;
-`;
 const Search = styled.div`
   justify-content: center;
-
   outline: none;
   display: flex;
   align-items: center;
@@ -30,9 +23,6 @@ const Icon = styled.i`
   background: #7d48df;
   height: 100%;
   color: #fff;
-`;
-const SearchBarWrapper = styled.div`
-  border-bottom: 2px solid #7d48df;
 `;
 const SearchBar = styled.input`
   padding: 3% 2%;
@@ -94,7 +84,7 @@ class Posts extends Component {
           </Search>
         </form>
         <Link href="/add-post">
-          <Button>Add Post</Button>
+          <Button style={{ marginTop: "2%" }}>Add Post</Button>
         </Link>
         {postContent}
       </div>

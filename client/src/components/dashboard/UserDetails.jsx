@@ -6,18 +6,35 @@ import styled from "styled-components";
 import Link from "../common/Link";
 
 const UserDetailsContainer = styled.div`
-  &:after {
-    content: "";
-    display: block;
-    margin: 3% 0;
-    border-bottom: 3px solid #7d48df;
+  margin: 0 auto;
+  padding: 0 3%;
+  h3 {
+    text-align: center;
+  }
+  p {
+    text-align: center;
+    margin: 5% 0;
+  }
+  @media (max-width: 650px) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+`;
+const UserDetailText = styled.div`
+  @media (max-width: 650px) {
+    padding: 0 3%;
   }
 `;
 const DetailImg = styled.img`
-  border-radius: 10%;
-  height: 128px;
-  width: 128px;
+  border-radius: 5%;
+  height: 150px;
+  width: 100%;
   object-fit: cover;
+  @media (max-width: 650px) {
+    height: 150px;
+    width: 150px;
+  }
 `;
 
 class UserDetails extends Component {
@@ -27,13 +44,15 @@ class UserDetails extends Component {
     return (
       <UserDetailsContainer>
         <DetailImg src={profile.avatar} />
-        <Link href={`/profile/${profile.handle}`}>
-          <h3>{user.name}</h3>
-        </Link>
-        <p>
-          {profile.role}{" "}
-          {profile.company === null ? "" : " @ " + profile.company}
-        </p>
+        <UserDetailText>
+          <Link href={`/profile/${profile.handle}`}>
+            <h3>{user.name}</h3>
+          </Link>
+          <p>
+            {profile.role}{" "}
+            {profile.company === null ? "" : " @ " + profile.company}
+          </p>
+        </UserDetailText>
       </UserDetailsContainer>
     );
   }

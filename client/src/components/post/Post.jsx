@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { getPost } from "../../actions/postActions";
+import { getPostByPostId } from "../../actions/postActions";
 import Spinner from "../common/Spinner";
 import Button from "../common/Button";
+import Link from "../common/Link";
 import isEmpty from "../../validation/is-empty";
 // Styled Components
 import styled from "styled-components";
@@ -23,6 +24,18 @@ const PostContainer = styled.div`
   grid-template-rows: 80px 1fr;
   grid-gap: 20px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  @media (max-width: 650px) {
+    grid-template-columns: 1fr 150px;
+  }
+  @media (max-width: 650px) {
+    grid-template-areas:
+      "content-header"
+      "content-body"
+      "sidebar";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    width: 100%;
+  }
 `;
 const PostHeader = styled.div`
   grid-area: content-header;
@@ -55,9 +68,21 @@ const PostBody = styled.div`
     width: 100%;
     object-fit: cover;
   }
+  @media (max-width: 650px) {
+    margin-bottom: 15%;
+  }
+  @media (max-width: 400px) {
+    margin-bottom: 25%;
+  }
 `;
 const PostBodyProjectDesc = styled.div`
+  margin-bottom: 5%;
   border-bottom: 3px solid #fdca1e;
+`;
+const PostBodyRoleDesc = styled.div`
+  padding-bottom: 10%;
+  @media (max-width: 650px) {
+  }
 `;
 const PostSideBar = styled.div`
   grid-area: sidebar;
@@ -66,6 +91,9 @@ const PostSideBar = styled.div`
   background: #e2eef0;
   padding: 0 5%;
   font-size: 0.9rem;
+  @media (max-width: 650px) {
+    grid-template-rows: 100px 150px 150px;
+  }
 `;
 const PostUser = styled.div`
   display: flex;
@@ -80,6 +108,10 @@ const PostUser = styled.div`
     height: 100%;
     width: 100%;
     object-fit: cover;
+    @media (max-width: 650px) {
+      height: 75px;
+      width: 75px;
+    }
   }
   p {
     margin: 5% 0;
@@ -113,37 +145,37 @@ class Post extends Component {
     });
   };
   componentDidMount() {
-    this.props.getPost(this.props.match.params.id);
+    console.log(this.props.match.params.id);
+    this.props.getPostByPostId(this.props.match.params.id);
   }
   render() {
     const { post, loading } = this.props.post;
-
-    // Create tags
-    let tags;
-    if (post.tags) {
-      tags = post.tags.map((tag, index) => <li key={index}>{tag}</li>);
-    }
-    // Role description section
-    let roles;
-    if (post.seeking) {
-      roles = post.seeking.map((role, index) => (
-        <div key={role._id} className="role-description">
-          <h4>{role.role}</h4>
-          <p>{role.desc}</p>
-        </div>
-      ));
-    }
+    console.log(post);
 
     // Check for state is loaded
     let postContent;
     if (post === null || loading || Object.keys(post).length === 0) {
       postContent = <Spinner />;
     } else {
+      // Get Post tags from array
+      let tags = post.tags.map((tag, index) => {
+        console.log(tag);
+        return <li key={index}>{tag}</li>;
+      });
+      // Get Role Description from array
+      let roles = post.seeking.map((role, index) => (
+        <PostBodyRoleDesc key={role._id} className="role-description">
+          <h4>{role.role}</h4>
+          <p>{role.desc}</p>
+        </PostBodyRoleDesc>
+      ));
       postContent = (
         <PostContainer>
           <PostHeader>
             <PostHeaderImg>
-              <img src={post.avatar} alt="" srcset="" />
+              <Link href={`/profile/${post.handle}`}>
+                <img src={post.avatar} alt="" srcset="" />
+              </Link>
             </PostHeaderImg>
             <h2>{post.title}</h2>
             <p>
@@ -223,4 +255,7 @@ const mapStateToProps = state => ({
   profile: state.profile
 });
 
-export default connect(mapStateToProps, { getPost })(Post);
+export default connect(
+  mapStateToProps,
+  { getPostByPostId }
+)(Post);

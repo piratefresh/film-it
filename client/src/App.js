@@ -7,7 +7,6 @@ import setAuthToken from "./utils/setAuthToken";
 import {
   setCurrentUser,
   logoutUser,
-  fetchUser,
   loginGoogleUser
 } from "./actions/authActions";
 import {
@@ -22,7 +21,6 @@ import Navbar from "./components/layout/Nav/Navbar";
 import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
-import Inbox from "./components/messages/Inbox";
 import CreateProfileNew from "./components/create-profile/CreateProfileNew";
 import EditProfile from "./components/edit-profile/EditProfile";
 import EditGalleryPictures from "./components/edit-profile/EditProfileGallery";
@@ -36,25 +34,30 @@ import EditPostForm from "./components/posts/EditPostForm";
 import Post from "./components/post/Post";
 import Applications from "./components/post/Applications";
 import Login from "./components/auth/Login";
-// TEST
 import Messenger from "./components/real-time-messaging/Messenger";
 import MessageWindow from "./components/real-time-messaging/MessageWindow";
+// Test
+import RoleInputs from "./components/posts/RoleInputs";
 // Styling
 import "./App.css";
 import "normalize.css";
+
 import bgPattern from "./img/svg/topography.svg";
 //Styled Components
 import styled from "styled-components";
 import getCookie from "./components/common/CheckCookie";
 
-const Wrapper = styled.div`
-  background-color: #f9f9f9;
-  background-image: url(${bgPattern});
-`;
+const Wrapper = styled.div``;
 const Container = styled.div`
   margin: 5% auto;
   width: 1000px;
   height: 100%;
+  @media (max-width: 1000px) {
+    width: 90%;
+    margin: 0 auto;
+  }
+  @media (max-width: 600px) {
+  }
 `;
 
 //LOGGED IN CHECKS
@@ -128,6 +131,7 @@ class App extends Component {
                   component={Messenger}
                   name={handle}
                 />
+                <Route exact path="/extrainputs" component={RoleInputs} />
                 <Route exact path="/" component={Posts} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />

@@ -14,11 +14,11 @@ const ProfileBio = styled.div`
 
 class ProfileAbout extends Component {
   render() {
-    const { profile } = this.props;
+    const { profileHandle } = this.props;
     // Skills
     let skills = "";
-    if (profile.skills && profile.skills.length > 0) {
-      skills = profile.skills.map((skill, index) => (
+    if (profileHandle.skills && profileHandle.skills.length > 0) {
+      skills = profileHandle.skills.map((skill, index) => (
         <div key={index} className="profile-skills">
           <Button style={{ background: "#fdca1e" }}>{skill}</Button>
         </div>
@@ -28,10 +28,12 @@ class ProfileAbout extends Component {
       <ProfileDesc>
         <ProfileBio>
           <p>
-            {isEmpty(profile.bio)
+            {isEmpty(profileHandle.bio)
               ? "Sadly there is no description about " +
-                (profile && profile.user ? profile.user.name : "")
-              : profile.bio}
+                (profileHandle && profileHandle.user
+                  ? profileHandle.user.name
+                  : "")
+              : profileHandle.bio}
           </p>
         </ProfileBio>
         <h4>Skills:</h4>

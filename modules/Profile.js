@@ -15,6 +15,9 @@ const ProfileSchema = new Schema({
   avatar: {
     type: String
   },
+  avatarImageId: {
+    type: String
+  },
   company: {
     type: String
   },

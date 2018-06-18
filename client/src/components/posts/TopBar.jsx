@@ -14,11 +14,21 @@ const JobBar = styled.div`
     padding: 10px;
     list-style: none;
     background: #fff;
-    cursor: pointer;
   }
   a {
     text-transform: uppercase;
     text-decoration: none;
+    cursor: pointer;
+  }
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+    padding: 0;
+    width: 100%;
+    font-size: 0.6rem;
+    li {
+      flex: 0 0 30%;
+      margin: 2% 0;
+    }
   }
 `;
 const ActiveTab = styled.div`

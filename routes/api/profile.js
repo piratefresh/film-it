@@ -82,7 +82,6 @@ router.get("/all", (req, res) => {
 // @access  Public
 router.get("/handle/:handle", (req, res) => {
   const errors = {};
-
   Profile.findOne({ handle: req.params.handle })
     .populate("user", "name")
     .then(profile => {
@@ -118,22 +117,35 @@ router.get("/user/:user_id", (req, res) => {
 // @route   Post api/profile/
 // @desc    Create or edit user profile
 // @access  Private
-router.post("/", isAuth, upload.single("avatar"), (req, res) => {
+router.post("/", isAuth, upload.single("avatar"), async (req, res) => {
   const { errors, isValid } = validateProfileInput(req.body);
   // Check Validation
   if (!isValid) {
     // Return any errors with 400 status
     return res.status(400).json(errors);
   }
-  cloudinary.uploader.upload(req.file.path, result => {
-    req.body.avatar = result.secure_url;
-    console.log(result);
+  try {
+    if (req.file) {
+      // Deleting old avatar from cloudinary
+      console.log("Deleting old avatar");
+      await cloudinary.v2.uploader.destroy(req.body.avatarImageId);
+      // Uploading new avatar to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path);
+      // Get the new Result variables
+      // The direct image url
+      req.body.avatar = result.secure_url;
+      // Get the ID to later delete
+      req.body.avatarImageId = result.public_id;
+    }
+
     // Get fields
     const profileFields = {};
     // Get user id, email name avatar
     profileFields.user = req.user.id;
     profileFields.unreadMessageCount = 0;
     if (req.body.avatar) profileFields.avatar = req.body.avatar;
+    if (req.body.avatarImageId)
+      profileFields.avatarImageId = req.body.avatarImageId;
     if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.company) profileFields.company = req.body.company;
     if (req.body.website) profileFields.website = req.body.website;
@@ -175,11 +187,13 @@ router.post("/", isAuth, upload.single("avatar"), (req, res) => {
         });
       }
     });
-  });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // @route   POST api/profile/profilepic
-// @desc    Add experince to profile
+// @desc    Edit Profile Picture
 // @access  Private
 router.post("/profilepic", isAuth, upload.single("avatar"), (req, res) => {
   cloudinary.uploader.upload(req.file.path, result => {
@@ -218,9 +232,24 @@ router.post("/profile-gallery", isAuth, upload.single("image"), (req, res) => {
 // @route   POST api/profile/profile-gallery/delete
 // @desc    Add images to profile
 // @access  Private
-router.post("/profile-gallery/delete", isAuth, (req, res) => {
-  cloudinary.v2.uploader.destroy(id, function(error, result) {
-    console.log(result);
+router.post("/profile-gallery/delete/", isAuth, (req, res) => {
+  Profile.findOne({ user: req.user.id }, async (err, profile) => {
+    console.log(req.body.imageId);
+    try {
+      await cloudinary.v2.uploader.destroy(req.body).imageId;
+      console.log("Image");
+      // Get remove index
+      const removeIndex = profile.gallery
+        .map(item => item.id)
+        .indexOf(req.params.imageId);
+      // Splice out of array
+      profile.gallery.splice(removeIndex, 1);
+      // Save
+      profile.save().then(profile => res.json(profile));
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json(err);
+    }
   });
 });
 
@@ -341,10 +370,15 @@ router.delete("/education/:edu_id", isAuth, (req, res) => {
 // @desc    Delete user and profile
 // @access  Private
 router.delete("/", isAuth, (req, res) => {
-  Profile.findOneAndRemove({ user: req.user.id }).then(() => {
-    User.findOneAndRemove({ _id: req.user.id }).then(() =>
-      res.json({ success: true })
-    );
+  Profile.findOneAndRemove({ user: req.user.id }, async (err, res) => {
+    try {
+      await cloudinary.v2.uploader.destroy(profile.avatarImageId);
+      User.findOneAndRemove({ _id: req.user.id }).then(() => {
+        res.json({ success: true });
+      });
+    } catch (err) {
+      res.json({ error: "not success" });
+    }
   });
 });
 

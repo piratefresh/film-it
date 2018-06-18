@@ -19,6 +19,11 @@ const FormCard = styled.div`
   background: #fff;
   width: 250px;
   margin: 5% auto;
+  @media (max-width: 600px) {
+    max-width: 100%;
+    margin: 0 auto
+    grid-gap: 0;
+  }
 `;
 const FormGroup = styled.div`
   padding: 10px 0px;
@@ -200,4 +205,7 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, actions)(Login);
+export default connect(
+  mapStateToProps,
+  actions
+)(Login);

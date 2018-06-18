@@ -60,7 +60,6 @@ const socket = io => {
             { $set: { unreadMessageCount: res[0].count } },
             (err, res) => {
               if (res) {
-                console.log(res);
                 socket.emit("addUnreadMessageCount", {
                   count: res.unreadMessageCount
                 });
@@ -75,7 +74,6 @@ const socket = io => {
             { $set: { unreadMessageCount: 0 } },
             (err, res) => {
               if (res) {
-                console.log(res);
                 socket.emit("addUnreadMessageCount", {
                   count: res.unreadMessageCount
                 });
@@ -120,7 +118,6 @@ const socket = io => {
               const socketSender = socketUsers.find(id => {
                 return id.username === mesg.senderHandle.toString();
               });
-              console.log(socketSender);
 
               // If Reciever is not online we dont send to reciever
               if (socketReciever !== undefined) {
@@ -148,7 +145,6 @@ const socket = io => {
               const socketSender = socketUsers.find(id => {
                 return id.username === mesg.senderHandle.toString();
               });
-              console.log(socketSender);
 
               // If Reciever is not online we dont send to reciever
               if (socketReciever !== undefined) {
@@ -171,8 +167,7 @@ const socket = io => {
     });
 
     // Disconnects
-    socket.on("disconnect", data => {
-      console.log(data);
+    socket.on("disconnect", () => {
       console.log("disconnected" + toString(socket.id));
     });
   });

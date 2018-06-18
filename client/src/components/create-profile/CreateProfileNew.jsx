@@ -445,7 +445,7 @@ class CreateProfile extends Component {
                 Add Social Network Links
               </Button>
               <SmallSpan>Optional</SmallSpan>
-            </div>;
+            </div>
             {socialInputs}
             <Button
               type="submit"
@@ -478,9 +478,10 @@ const mapStateToProps = state => ({
 
 const styledComponent = withStyles(styles)(CreateProfile);
 
-export default connect(mapStateToProps, { createProfile })(
-  withRouter(styledComponent)
-);
+export default connect(
+  mapStateToProps,
+  { createProfile }
+)(withRouter(styledComponent));
 
 /* export default withStyles(styles)connect(mapStateToProps, { createProfile })(
   withRouter(CreateProfile)

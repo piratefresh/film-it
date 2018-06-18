@@ -36,52 +36,65 @@ const ProfileSocial = styled.div`
 
 class ProfileHeader extends Component {
   render() {
-    const { profile } = this.props;
+    const { profileHandle } = this.props;
     return (
       <ProfileDetails>
-        <h3>{profile && profile.user ? profile.user.name : ""}</h3>
+        <h3>
+          {profileHandle && profileHandle.user ? profileHandle.user.name : ""}
+        </h3>
         <p>
-          {profile.role} @ {isEmpty(profile.company) ? null : profile.company}
+          {profileHandle.role} @{" "}
+          {isEmpty(profileHandle.company) ? null : profileHandle.company}
         </p>
         <p>
           Location:{" "}
           <strong>
-            {profile.city}, {profile.state}
+            {profileHandle.city}, {profileHandle.state}
           </strong>
         </p>
-        {isEmpty(profile.website) ? null : (
-          <Link href={profile.website} target="_blank">
+        {isEmpty(profileHandle.website) ? null : (
+          <Link href={profileHandle.website} target="_blank">
             <i className="fas fa-cubes" />
           </Link>
         )}
         <ProfileSocial>
           {/* Twitter */}
-          {isEmpty(profile.social && profile.social.twitter) ? null : (
-            <Link href={profile.social.twitter} target="_blank">
+          {isEmpty(
+            profileHandle.social && profileHandle.social.twitter
+          ) ? null : (
+            <Link href={profileHandle.social.twitter} target="_blank">
               <i className="fab fa-twitter-square fa-2x" />
             </Link>
           )}
           {/* Facebook */}
-          {isEmpty(profile.social && profile.social.facebook) ? null : (
-            <Link href={profile.social.facebook} target="_blank">
+          {isEmpty(
+            profileHandle.social && profileHandle.social.facebook
+          ) ? null : (
+            <Link href={profileHandle.social.facebook} target="_blank">
               <i className="fab fa-facebook-square fa-2x" />
             </Link>
           )}
           {/* Instagram */}
-          {isEmpty(profile.social && profile.social.instagram) ? null : (
-            <Link href={profile.social.instagram} target="_blank">
+          {isEmpty(
+            profileHandle.social && profileHandle.social.instagram
+          ) ? null : (
+            <Link href={profileHandle.social.instagram} target="_blank">
               <i className="fab fa-instagram fa-2x" />
             </Link>
           )}
           {/* Linkedin */}
-          {isEmpty(profile.social && profile.social.linkedin) ? null : (
-            <Link href={profile.social.linkedin} target="_blank">
+          {isEmpty(
+            profileHandle.social && profileHandle.social.linkedin
+          ) ? null : (
+            <Link href={profileHandle.social.linkedin} target="_blank">
               <i className="fab fa-linkedin fa-2x" />
             </Link>
           )}
           {/* Youtube */}
-          {isEmpty(profile.social && profile.social.youtube) ? null : (
-            <Link href={profile.social.youtube} target="_blank">
+          {isEmpty(
+            profileHandle.social && profileHandle.social.youtube
+          ) ? null : (
+            <Link href={profileHandle.social.youtube} target="_blank">
               <i class="fab fa-youtube-square fa-2x" />
             </Link>
           )}

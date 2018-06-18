@@ -15,6 +15,12 @@ const ProfileCard = styled.div`
   background: #fff;
   padding: 2%;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  @media (max-width: 700px) {
+    margin-top: 10%;
+    margin-bottom: 30%;
+    margin-left: 0;
+    width: 100%;
+  }
 `;
 const CardHeader = styled.div`
   position: relative;

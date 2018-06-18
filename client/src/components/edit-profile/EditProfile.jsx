@@ -69,6 +69,8 @@ class CreateProfile extends Component {
     this.state = {
       displaySocialInputs: false,
       handle: "",
+      avatar: "",
+      avatarImageId: "",
       website: "",
       state: "",
       city: "",
@@ -104,6 +106,10 @@ class CreateProfile extends Component {
       // if profile field dosen't exist, make empty string
       profile.company = !isEmpty(profile.company) ? profile.company : "";
       profile.website = !isEmpty(profile.website) ? profile.website : "";
+      profile.avatar = !isEmpty(profile.avatar) ? profile.avatar : "";
+      profile.avatarImageId = !isEmpty(profile.avatarImageId)
+        ? profile.avatarImageId
+        : "";
       profile.state = !isEmpty(profile.state) ? profile.state : "";
       profile.city = !isEmpty(profile.city) ? profile.city : "";
       profile.reel = !isEmpty(profile.reel) ? profile.reel : "";
@@ -128,6 +134,8 @@ class CreateProfile extends Component {
       // Set component fields state
       this.setState({
         handle: profile.handle,
+        avatar: profile.avatar,
+        avatarImageId: profile.avatarImageId,
         website: profile.website,
         city: profile.city,
         state: profile.state,
@@ -148,6 +156,8 @@ class CreateProfile extends Component {
 
     const data = new FormData();
     data.append("handle", this.state.handle);
+    data.append("avatar", this.state.avatar);
+    data.append("avatarImageId", this.state.avatarImageId);
     data.append("website", this.state.website);
     data.append("city", this.state.city);
     data.append("state", this.state.state);
@@ -166,6 +176,13 @@ class CreateProfile extends Component {
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
+
+  fileSelectedHandler = e => {
+    this.setState({
+      avatar: e.target.files[0]
+    });
+    console.log(this.state.avatar);
+  };
 
   render() {
     const { errors, displaySocialInputs } = this.state;
@@ -283,9 +300,28 @@ class CreateProfile extends Component {
                 required
               />
               <SmallText>A unique handle for your profile URL.</SmallText>
-              <Link href="profile-picture">
+              {/*               <Link href="profile-picture">
                 <Button type="button">Change profile picture</Button>
-              </Link>
+              </Link> */}
+              <TextField
+                id="avatar"
+                label="Profile Picture"
+                margin="normal"
+                name="avatar"
+                type="file"
+                onChange={this.fileSelectedHandler}
+                fullWidth={true}
+                FormHelperTextProps={{
+                  classes: {
+                    root: classes.label
+                  }
+                }}
+                InputProps={{
+                  classes: {
+                    underline: classes.underline
+                  }
+                }}
+              />
               <TextField
                 id="city"
                 label="City"
@@ -472,7 +508,7 @@ class CreateProfile extends Component {
                 Add Social Network Links
               </Button>
               <SmallSpan>Optional</SmallSpan>
-            </div>;
+            </div>
             {socialInputs}
             <Button
               type="submit"
@@ -507,9 +543,10 @@ const mapStateToProps = state => ({
 
 const styledComponent = withStyles(styles)(CreateProfile);
 
-export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
-  withRouter(styledComponent)
-);
+export default connect(
+  mapStateToProps,
+  { createProfile, getCurrentProfile }
+)(withRouter(styledComponent));
 
 /* export default withStyles(styles)connect(mapStateToProps, { createProfile })(
   withRouter(CreateProfile)

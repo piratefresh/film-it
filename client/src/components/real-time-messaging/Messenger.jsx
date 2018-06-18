@@ -55,10 +55,6 @@ const InboxTypeContainer = styled.div`
     resize: vertical;
   }
 `;
-const ActionsArea = styled.div`
-  margin-left: auto;
-  padding-top: 2%;
-`;
 
 class Messenger extends Component {
   constructor(props) {
@@ -139,10 +135,6 @@ class Messenger extends Component {
   }
 
   componentWillUnmount() {
-    const { profile } = this.props.profile;
-    const reconnection = true,
-      reconnectionDelay = 5000,
-      reconnectionTry = 0;
     socket.on("disconnect", function() {
       socket.disconnect();
       console.log("client disconnected");
