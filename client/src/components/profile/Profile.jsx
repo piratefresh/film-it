@@ -21,13 +21,20 @@ const ProfileContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   border-radius: 10px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+
+  p {
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 650px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 40vh 1fr;
+  }
 `;
 const ProfileAvatar = styled.img`
-  height: 100%;
+  height: 40vh;
   width: 100%;
   object-fit: cover;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
 `;
 
 class Profile extends Component {

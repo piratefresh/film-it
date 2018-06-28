@@ -4,6 +4,7 @@ import isEmpty from "../../validation/is-empty";
 import styled from "styled-components";
 import Link from "../common/Link";
 import Button from "../common/Button";
+import toTitleCase from "../common/toTitleCase";
 
 const ProfileCard = styled.div`
   display: inline-block;
@@ -64,8 +65,12 @@ class ProfileItem extends Component {
         </CardHeader>
         <CardContent>
           <Link href={`/profile/${profile.handle}`}>
-            <h4 style={{ margin: "2% 0" }}>{profile.user.name}</h4>
+            <h4 style={{ margin: "2% 0" }}>{profile.handle}</h4>
           </Link>
+          <p>
+            <strong>Name: </strong>
+            {toTitleCase(profile.user.name)}
+          </p>
           <p>
             <strong>Role: </strong>
             {profile.role}{" "}

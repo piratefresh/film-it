@@ -3,13 +3,8 @@ import PropTypes from "prop-types";
 import styled, { keyframes } from "styled-components";
 
 const transform0100 = keyframes`
-  from {
-    border-bottom: 0px solid #7d48df;
-  }
-
-  to {
-    border-bottom: 3px solid #7d48df;
-  }
+  from {border-bottom: 0px solid #7d48df;}
+  to {border-bottom: 3px solid #7d48df;}
 `;
 
 const FormInput = styled.input`
@@ -20,9 +15,7 @@ const FormInput = styled.input`
   border-bottom: 2px solid #f0f0f0;
   background: rgba(96, 111, 123, 0.1);
   outline: none;
-  margin-bottom: 10%;
-  margin-top: 3%;
-  padding: 2%;
+  padding: 4%;
   :focus {
     border-bottom: 3px solid #7d48df;
     animation: ${transform0100} 100ms ease-in-out;
@@ -34,7 +27,7 @@ const FormInput = styled.input`
 const Small = styled.div`
   color: #6c757d !important;
   margin-top: 0.25rem;
-  font-size: 80%;
+  font-size: 0.7rem;
   font-weight: 400;
   box-sizing: border-box;
 `;
@@ -42,7 +35,7 @@ const InvalidFeedback = styled.div`
   color: #fa3e3e;
   width: 100%;
   margin-top: 0.25rem;
-  font-size: 80%;
+  font-size: 0.7rem;
 `;
 
 const FormInputField = ({

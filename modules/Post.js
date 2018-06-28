@@ -27,14 +27,6 @@ const PostSchema = new Schema(
       type: String,
       required: true
     },
-    image: {
-      type: String,
-      index: false
-    },
-    image_id: {
-      type: String,
-      index: false
-    },
     title: {
       type: String,
       required: true
@@ -49,19 +41,16 @@ const PostSchema = new Schema(
         trim: true
       }
     ],
-    seeking: [
-      {
-        desc: {
-          type: String,
-          trim: true
-        },
-        role: {
-          type: String,
-          required: true,
-          trim: true
-        }
+    seeking: {
+      desc: {
+        type: [String],
+        trim: true
+      },
+      titles: {
+        type: [String],
+        required: true
       }
-    ],
+    },
     budget: {
       type: String
     },
@@ -78,6 +67,12 @@ const PostSchema = new Schema(
     start: {
       type: Date,
       required: true
+    },
+    headerImage: {
+      type: String
+    },
+    headerImageId: {
+      type: String
     },
     end: {
       type: Date

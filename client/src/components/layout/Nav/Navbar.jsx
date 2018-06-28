@@ -13,12 +13,24 @@ import {
 } from "../../../actions/messageActions";
 // Socket.Io
 import { socket } from "../../../store";
-// Responsive Check
-import MediaQuery from "react-responsive";
+// lodash
+import throttle from "lodash.throttle";
+// Font awesome
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTasks,
+  faUsers,
+  faInbox,
+  faSignInAlt
+} from "@fortawesome/free-solid-svg-icons";
 
 const Nav = styled.nav`
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 0px;
   background: #fff;
   @media (max-width: 650px) {
     position: fixed;
@@ -57,7 +69,6 @@ const NavUl = styled.ul`
   display: flex;
   justify-content: space-around;
   align-items: center;
-
   @media (max-width: 600px) {
     justify-content: space-evenly;
     width: 100%;
@@ -67,19 +78,25 @@ const NavUl = styled.ul`
 const NavLink = styled.a`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 15px;
   text-transform: uppercase;
   text-decoration: none;
   color: #7d48df;
-  vertical-align: middle;
   position: relative;
+  /* NavBar Icon */
+  h2 {
+    font-family: "Poppins";
+  }
   @media (max-width: 600px) {
     padding: 5% 0;
     font-size: 0.6rem;
+    /* NavBar Icon */
     h2 {
       padding-left: 5%;
     }
-  }}
+  }
 `;
 const MessageCount = styled.span`
   background-color: #fa3e3e;
@@ -101,9 +118,8 @@ const NavImg = styled.img`
   align-items: center;
   justify-content: center;
   object-fit: cover;
-  height: 35px;
-  width: 35px;
-  margin-right: 5px;
+  height: 22px;
+  width: 22px;
   vertical-align: middle;
   border-radius: 50%;
   overflow: hidden;
@@ -112,13 +128,6 @@ const NavImg = styled.img`
     width: 20px;
     margin: 0;
   }
-`;
-const NotifyBubble = styled.div`
-  background: red;
-  height: 15px;
-  width: 15px;
-  border-radius: 15%;
-  position: absolute;
 `;
 
 class Navbar extends Component {
@@ -135,13 +144,22 @@ class Navbar extends Component {
     });
   }
 
-  throttledHandleWindowResize = () => {
-    this.setState({ isMobile: window.innerWidth < 650 });
-  };
-
   componentDidMount() {
     this.props.getCurrentProfile();
+    // Check mobile or not
+    window.addEventListener("resize", this.resize.bind(this));
+    this.resize();
   }
+
+  componentWillUnmount() {
+    window.addEventListener("resize", this.resize.bind(this));
+  }
+
+  resize = throttle(() => {
+    this.setState({
+      isMobile: window.innerWidth <= 650
+    });
+  }, 1000);
 
   componentWillUnmount() {
     socket.emit("disconnect");
@@ -166,25 +184,41 @@ class Navbar extends Component {
         authLinks = (
           <NavUl>
             <NavLink href="/feed">
-              <i className="fas fa-tasks fa-2x" /> Posts
+              <FontAwesomeIcon icon={faTasks} size="2x" /> Posts
             </NavLink>
             <NavLink href="/profiles">
-              <i class="fas fa-users fa-2x" />
+              <i
+                class={!isMobile ? "fas fa-users fa-lg" : "fas fa-users fa-2x"}
+              />
               Profiles
             </NavLink>
             <NavLink href="/inbox">
-              <i class="fas fa-inbox fa-2x" />
+              <i
+                class={!isMobile ? "fas fa-inbox fa-lg" : "fas fa-inbox fa-2x"}
+              />
               Inbox
             </NavLink>
-            <NavLink href="/dashboard fa-2x">
-              <i className="fas fa-user-plus" />
+            <NavLink href="/dashboard">
+              <i
+                className={
+                  !isMobile
+                    ? "fas fa-user-plus fa-lg"
+                    : "fas fa-user-plus fa-2x"
+                }
+              />
               Dashboard
             </NavLink>
             <NavLink
               href="/auth/logout"
               onClick={this.onLogoutClick.bind(this)}
             >
-              <i className="fas fa-sign-in-alt fa-2x" />Logout Logout
+              <i
+                className={
+                  !isMobile
+                    ? "fas fa-sign-in-alt fa-lg"
+                    : "fas fa-sign-in-alt fa-2x"
+                }
+              />Logout Logout
             </NavLink>
           </NavUl>
         );
@@ -197,16 +231,16 @@ class Navbar extends Component {
         authLinks = (
           <NavUl>
             <NavLink href="/feed">
-              <i className="fas fa-tasks fa-2x" />
+              <FontAwesomeIcon icon={faTasks} size={isMobile ? "2x" : "lg"} />
               Posts
             </NavLink>
             <NavLink href="/profiles">
-              <i class="fas fa-users fa-2x" />
+              <FontAwesomeIcon icon={faUsers} size={isMobile ? "2x" : "lg"} />
               Profiles
             </NavLink>
             <NavLink href="/inbox">
               <MessageCount>{profile.unreadMessageCount}</MessageCount>
-              <i class="fas fa-inbox fa-2x" />
+              <FontAwesomeIcon icon={faInbox} size={isMobile ? "2x" : "lg"} />
               Inbox
             </NavLink>
             <NavLink href="/dashboard">
@@ -217,7 +251,10 @@ class Navbar extends Component {
               href="/auth/logout"
               onClick={this.onLogoutClick.bind(this)}
             >
-              <i className="fas fa-sign-in-alt fa-2x" />
+              <FontAwesomeIcon
+                icon={faSignInAlt}
+                size={isMobile ? "2x" : "lg"}
+              />
               Logout
             </NavLink>
           </NavUl>
@@ -228,16 +265,28 @@ class Navbar extends Component {
     const guestLinks = (
       <NavUl>
         <NavLink href="/feed">
-          <i className="fas fa-tasks fa-2x" />Posts
+          <i
+            className={!isMobile ? "fas fa-tasks fa-lg" : "fas fa-tasks fa-2x"}
+          />Posts
         </NavLink>
         <NavLink href="/profiles">
-          <i class="fas fa-users fa-2x" />Profiles
+          <i class={!isMobile ? "fas fa-users fa-lg" : "fas fa-users fa-2x"} />Profiles
         </NavLink>
         <NavLink href="/register">
-          <i className="fas fa-user-plus fa-2x" />Sign Up
+          <i
+            className={
+              !isMobile ? "fas fa-user-plus fa-lg" : "fas fa-user-plus fa-2x"
+            }
+          />Sign Up
         </NavLink>
         <NavLink href="/login">
-          <i className="fas fa-sign-in-alt fa-2x" />Login
+          <i
+            className={
+              !isMobile
+                ? "fas fa-sign-in-alt fa-lg"
+                : "fas fa-sign-in-alt fa-2x"
+            }
+          />Login
         </NavLink>
       </NavUl>
     );

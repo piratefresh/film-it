@@ -32,7 +32,9 @@ class PostHistoryItem extends Component {
     return (
       <PostDetails>
         <div className="post-title">
-          <h4>{post.title}</h4>
+          <Link href={`/post/${post._id}`}>
+            <h4>{post.title}</h4>
+          </Link>
           <div className="post-shorten">{post.desc.substr(0, 150)}</div>
         </div>{" "}
         <Actions>

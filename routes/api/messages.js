@@ -62,6 +62,28 @@ router.get("/unread", isAuth, (req, res) => {
   });
 });
 
+// @route   Get api/messages/inbox/profile/handle
+// @desc    Get messages by id
+// @access  Private
+router.get("/inbox/profile/:handle", isAuth, (req, res) => {
+  Profile.findOne({ handle: req.params.handle }).then(profile => {
+    Profile.findOne({ user: { _id: req.user.id } }).then(userProfile => {
+      Conversation.find({
+        participants: {
+          $all: [profile.handle, userProfile.handle]
+        }
+      })
+        .sort({ date: -1 })
+        .then(messages => res.json(messages))
+        .catch(err =>
+          res
+            .status(404)
+            .json({ nomessagesfound: "Couldn't find any messages" })
+        );
+    });
+  });
+});
+
 // @route   Get api/messages/post/:handle/:subject
 // @desc    Post Message to user by handle
 // @access  Public

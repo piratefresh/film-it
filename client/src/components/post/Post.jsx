@@ -24,6 +24,9 @@ const PostContainer = styled.div`
   grid-template-rows: 80px 1fr;
   grid-gap: 20px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  p {
+    font-size: 0.8rem;
+  }
   @media (max-width: 650px) {
     grid-template-columns: 1fr 150px;
   }
@@ -62,7 +65,7 @@ const PostBody = styled.div`
   display: grid;
   grid-template-rows: repeat(auto-fit, 1fr);
   grid-gap: 3%;
-  margin: 4% 0;
+  margin: 2% 0;
   img {
     height: 200px;
     width: 100%;
@@ -76,11 +79,20 @@ const PostBody = styled.div`
   }
 `;
 const PostBodyProjectDesc = styled.div`
-  margin-bottom: 5%;
+  p {
+    padding: 3% 0;
+  }
   border-bottom: 3px solid #fdca1e;
 `;
 const PostBodyRoleDesc = styled.div`
-  padding-bottom: 10%;
+  background: #e2eef0;
+  padding: 2%;
+  h4 {
+    text-align: center;
+  }
+  p {
+    text-align: center;
+  }
   @media (max-width: 650px) {
   }
 `;
@@ -163,12 +175,14 @@ class Post extends Component {
         return <li key={index}>{tag}</li>;
       });
       // Get Role Description from array
-      let roles = post.seeking.map((role, index) => (
-        <PostBodyRoleDesc key={role._id} className="role-description">
-          <h4>{role.role}</h4>
-          <p>{role.desc}</p>
-        </PostBodyRoleDesc>
-      ));
+      let roles = post.seeking.titles.map((title, index) => {
+        return (
+          <PostBodyRoleDesc>
+            <h4>Role: {title}</h4>
+            <p>Tasks: {post.seeking.desc[index]}</p>
+          </PostBodyRoleDesc>
+        );
+      });
       postContent = (
         <PostContainer>
           <PostHeader>
@@ -187,11 +201,17 @@ class Post extends Component {
             </p>
           </PostHeader>
           <PostBody>
-            <img src={post.image} alt="" srcset="" />
+            {console.log(post.image)}
+            <img
+              src={post.headerImage !== undefined ? post.headerImage : null}
+              alt=""
+              srcset=""
+            />
             <PostBodyProjectDesc>
               <h4>Project Description</h4>
               <p>{post.desc}</p>
             </PostBodyProjectDesc>
+            <h4>Roles Available</h4>
             {roles}
           </PostBody>
           <PostSideBar>

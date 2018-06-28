@@ -69,7 +69,7 @@ router.get("/", (req, res) => {
 // @desc    Get Post by user id
 // @access  Public
 router.get("/:id", (req, res) => {
-  Post.find({ user: req.user.id })
+  Post.find({ user: req.params.id })
     .sort({ date: -1 })
     .then(posts => res.json(posts))
     .catch(err =>
@@ -92,78 +92,111 @@ router.get("/post/:id", (req, res) => {
 // @route   Update api/posts/:id/edit
 // @desc    Update Post
 // @access  Private
-router.put("/:id/edit", isAuth, (req, res) => {
+router.put(
+  "/:id/edit",
+  isAuth,
+  upload.single("headerImage"),
+  async (req, res) => {
+    const { errors, isValid } = ValidatePostInput(req.body);
+    // Check validation
+    if (!isValid) {
+      // if any errors, send 400 with errors object
+      return res.status(400).json(errors);
+    }
+    try {
+      if (req.file) {
+        // Deleting old avatar from cloudinary
+        console.log("Deleting old post header");
+        await cloudinary.v2.uploader.destroy(req.body.avatarImageId);
+        // Uploading new avatar to Cloudinary
+        const result = await cloudinary.uploader.upload(req.file.path);
+        // Get the new Result variables
+        // The direct image url
+        req.body.headerImage = result.secure_url;
+        // Get the ID to later delete
+        req.body.headerImageId = result.public_id;
+      }
+      updatePost = {
+        user: req.user.id,
+        handle: req.body.handle,
+        name: req.body.name,
+        avatar: req.body.avatar,
+        title: req.body.title,
+        desc: req.body.desc,
+        seeking: {
+          titles: req.body.roleTitles,
+          desc: req.body.roleDesc
+        },
+        city: req.body.city,
+        state: req.body.state,
+        headerImage: req.body.headerImage,
+        headerImageId: req.body.headerImageId,
+        start: req.body.start,
+        end: req.body.end,
+        jobType: req.body.jobType,
+        tags: req.body.tags.split(","),
+        budget: req.body.budget,
+        company: req.body.company
+      };
+      Post.findByIdAndUpdate(req.params.id, updatePost, { new: true })
+        .then(posts => res.json(posts))
+        .catch(err =>
+          res.status(404).json({ nopostfound: "Couldn't update that post" })
+        );
+    } catch (err) {
+      console.log(err + "something wrong with update post");
+    }
+  }
+);
+
+// @route   POST api/posts
+// @desc    Create Post
+// @access  Private
+router.post("/", isAuth, upload.single("headerImage"), async (req, res) => {
+  // Deserialize the JSON
+  const unpackTitles = JSON.parse(req.body.roleTitles);
+  const unpackDesc = JSON.parse(req.body.roleDesc);
+
   const { errors, isValid } = ValidatePostInput(req.body);
   // Check validation
   if (!isValid) {
     // if any errors, send 400 with errors object
     return res.status(400).json(errors);
   }
-  updatePost = {
+  if (req.file) {
+    // Uploading new avatar to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path);
+    // Get the new Result variables
+    // The direct image url
+    req.body.headerImage = result.secure_url;
+    // Get the ID to later delete
+    req.body.headerImageId = result.public_id;
+  }
+  //Creates new Post
+  const newPost = new Post({
     user: req.user.id,
-    handle: req.body.handle,
     name: req.body.name,
+    handle: req.body.handle,
     avatar: req.body.avatar,
     title: req.body.title,
     desc: req.body.desc,
     seeking: {
-      role: req.body.seekingRole,
-      desc: req.body.seekingDesc
+      titles: unpackTitles,
+      desc: unpackDesc
     },
     city: req.body.city,
     state: req.body.state,
+    headerImage: req.body.headerImage,
+    headerImageId: req.body.headerImageId,
     start: req.body.start,
     end: req.body.end,
     jobType: req.body.jobType,
     tags: req.body.tags.split(","),
     budget: req.body.budget,
     company: req.body.company
-  };
-  Post.findByIdAndUpdate(req.params.id, updatePost, { new: true })
-    .then(posts => res.json(posts))
-    .catch(err =>
-      res.status(404).json({ nopostfound: "Couldn't update that post" })
-    );
-});
-
-// @route   POST api/posts
-// @desc    Create Post
-// @access  Private
-router.post("/", isAuth, upload.single("image"), (req, res) => {
-  const { errors, isValid } = ValidatePostInput(req.body);
-  // Check validation
-  if (!isValid) {
-    // if any errors, send 400 with errors object
-    return res.status(400).json(errors);
-  }
-  cloudinary.uploader.upload(req.file.path, result => {
-    req.body.image = result.secure_url;
-    req.body.image_id = result.public_id;
-    const newPost = new Post({
-      user: req.user.id,
-      name: req.body.name,
-      handle: req.body.handle,
-      image: req.body.image,
-      image_id: req.body.image_id,
-      avatar: req.body.avatar,
-      title: req.body.title,
-      desc: req.body.desc,
-      seeking: {
-        role: req.body.seekingRole,
-        desc: req.body.seekingDesc
-      },
-      city: req.body.city,
-      state: req.body.state,
-      start: req.body.start,
-      end: req.body.end,
-      jobType: req.body.jobType,
-      tags: req.body.tags.split(","),
-      budget: req.body.budget,
-      company: req.body.company
-    });
-    // Save post
-    newPost.save().then(post => res.json(post));
   });
+  // Save post
+  newPost.save().then(post => res.json(post));
 });
 
 // @route   DELETE api/posts/:id
@@ -171,16 +204,19 @@ router.post("/", isAuth, upload.single("image"), (req, res) => {
 // @access  Private
 router.delete("/:id", isAuth, (req, res) => {
   Profile.findOne({ user: req.user.id }).then(profile => {
-    Post.findById(req.params.id)
-      .then(post => {
-        // Check for post owner
+    Post.findByIdAndRemove(req.params.id, async (err, post) => {
+      try {
         if (post.user.toString() !== req.user.id) {
           return res.status(401).json({ notauthorized: "User not authorized" });
         }
         //Delete
-        post.remove().then(() => res.json({ success: true }));
-      })
-      .catch(err => res.status(404).json({ postnotfound: "No post found" }));
+        console.log("deleted post image");
+        console.log(post.headerImageId);
+        await cloudinary.v2.uploader.destroy(post.headerImageId);
+      } catch (err) {
+        res.json({ error: "not success" });
+      }
+    });
   });
 });
 

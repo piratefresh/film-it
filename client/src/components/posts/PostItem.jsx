@@ -19,6 +19,11 @@ const PostCard = styled.div`
   grid-gap: 20px;
   background: #fff;
   font-size: 0.8rem;
+  transition:  box-shadow .3s ease-out;
+  :hover {
+    box-shadow: 0px 16px 24px 0px rgba(0, 0, 0, 0.3);
+    transition:  box-shadow .3s ease-in;
+  }
   @media (max-width: 800px) {
    width: 100%;
   }}
@@ -108,18 +113,18 @@ const PostCardFooter = styled.div`
   }
 `;
 const TagsWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 5%;
   @media (max-width: 400px) {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: repeat(3, 1fr);
+    height: 100px;
   }
 `;
 const StyledTags = styled.div`
-margin: 0 2%;
-      @media (max-width: 800px) {
-        margin: 2% 0;
-  }}
+  margin-right: 10%;
+  @media (max-width: 800px) {
+  }
 `;
 
 class PostItem extends Component {
@@ -140,7 +145,7 @@ class PostItem extends Component {
       <StyledTags>
         <Button
           key={index}
-          style={{ background: "#fdca1e", margin: "0 2%", cursor: "auto" }}
+          style={{ background: "#fdca1e", cursor: "auto", width: "70px" }}
           innerRef={this.tagButton}
         >
           <p>{tag}</p>

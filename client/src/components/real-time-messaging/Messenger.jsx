@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { getMessages, getMessageById } from "../../actions/messageActions";
-import Spinner from "../common/Spinner";
 // Components
 import MessageWindow from "./MessageWindow";
 import InboxChat from "./InboxChat";
@@ -10,8 +9,11 @@ import InboxChat from "./InboxChat";
 import styled from "styled-components";
 import Button from "../common/Button";
 import Link from "../common/Link";
+import Spinner from "../common/Spinner";
 // Socket.io
 import { socket } from "../../store";
+// responsiveness
+import MediaQuery from "react-responsive";
 
 const InboxContainer = styled.div`
   background: #fff;
@@ -25,6 +27,10 @@ const InboxContainer = styled.div`
     "list messages"
     "list textarea";
   padding: 5%;
+  @media (max-width: 650px) {
+    display: flex;
+    flex-direction: column;
+  }
 `;
 const InboxList = styled.div`
   grid-area: list;
@@ -55,17 +61,26 @@ const InboxTypeContainer = styled.div`
     resize: vertical;
   }
 `;
+const TextContentArea = styled.textarea`
+  resize: none;
+  overflow: hidden;
+  min-height: 100px;
+  max-height: 250px;
+  width: 100%;
+  overflow-y: scroll;
+`;
 
 class Messenger extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      makeNewMessage: false,
-      currrentMessage: "",
+      inboxListShow: true,
+      isMobile: false,
+      makeNewMessage: true,
       sender: "",
       recieverHandle: "",
       message: "",
-      username: "magnus"
+      username: ""
     };
 
     socket.on("addMessage", () => {
@@ -99,14 +114,24 @@ class Messenger extends Component {
       this.props.getMessages();
       console.log("added message onSubmit");
     });
+
+    this.setState({
+      message: ""
+    });
   }
 
-  onClick(id, e) {
+  onClick(id, e, sender) {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(id);
     this.props.getMessageById(id);
+
+    // user selected chat, set reciever handle in state
+    this.setState(prevState => ({
+      recieverHandle: sender[0],
+      makeNewMessage: true,
+      inboxListShow: !prevState.inboxListShow
+    }));
 
     socket.on("addMessage", mesg => {
       this.props.getMessageById(id);
@@ -120,9 +145,21 @@ class Messenger extends Component {
 
   componentDidMount() {
     const { conversations, loading } = this.props.conversations;
+    // Check mobile or not
+    window.addEventListener("resize", this.resize.bind(this));
+    this.resize();
 
     this.props.getMessages();
     console.log(conversations);
+
+    // Check if user came from profile page
+    if (this.props.match.params.handle) {
+      // user selected chat, set reciever handle in state
+      this.setState(prevState => ({
+        recieverHandle: this.props.match.params.handle,
+        makeNewMessage: true
+      }));
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -150,8 +187,18 @@ class Messenger extends Component {
     return conversations.messages;
   }
 
+  resize() {
+    this.setState({ isMobile: window.innerWidth <= 650 });
+  }
+
   render() {
-    const { errors, makeNewMessage, recepientHandle } = this.state;
+    const {
+      errors,
+      makeNewMessage,
+      recepientHandle,
+      inboxListShow,
+      isMobile
+    } = this.state;
     const { conversations, loading, currentMessage } = this.props.conversations;
     const { profile, profiles } = this.props.profile;
 
@@ -161,7 +208,9 @@ class Messenger extends Component {
         userHandles.push({ value: profile.handle, label: profile.handle });
       });
     }
+    // Sidebar inbox content
     let inboxListContent;
+    // Check if conversations are loaded
     if (conversations === null || loading) {
       inboxListContent = <Spinner />;
     } else {
@@ -177,7 +226,7 @@ class Messenger extends Component {
           return (
             <Link
               onClick={e => {
-                this.onClick(convo._id, e);
+                this.onClick(convo._id, e, sender);
               }}
               href={`/inbox/${convo._id}`}
             >
@@ -195,24 +244,32 @@ class Messenger extends Component {
     }
 
     let makeNewMessageInputs;
+    let inputReciever;
     if (!makeNewMessage) {
     } else {
+      if (recepientHandle === undefined && inboxListShow) {
+        inputReciever = (
+          <div>
+            <input
+              id="recieverHandle"
+              type="text"
+              placeholder="Username"
+              name="recieverHandle"
+              value={this.state.recieverHandle}
+              onChange={this.onChange}
+            />
+          </div>
+        );
+      }
       makeNewMessageInputs = (
         <InboxTypeContainer>
-          <label htmlFor="Sender">Reciever</label>
-          <input
-            id="recieverHandle"
+          {inputReciever}
+          <TextContentArea
+            id="textContent"
             type="text"
-            placeholder="recieverHandle"
-            name="recieverHandle"
-            onChange={this.onChange}
-          />
-          <label htmlFor="Sender">message</label>
-          <input
-            id="message"
-            type="text"
-            placeholder="message"
+            placeholder={`Sending message to ${this.state.recieverHandle}`}
             name="message"
+            value={this.state.message}
             onChange={this.onChange}
           />
           <Button style={{ width: "50px" }}>Send</Button>
@@ -225,8 +282,9 @@ class Messenger extends Component {
       messageWindowContent = <MessageWindow currentMessage={currentMessage} />;
     }
 
-    return (
-      <InboxContainer>
+    let inboxContent;
+    if (inboxListShow || !isMobile) {
+      inboxContent = (
         <InboxList>
           <Button
             onClick={e => {
@@ -236,12 +294,18 @@ class Messenger extends Component {
               }));
             }}
           >
-            <i className="fas fa-envelope-open" /> New Message
+            <i className="fas fa-envelope-open" />{" "}
+            {!makeNewMessage ? "New Message" : "Close Input"}
           </Button>
           <h4>Inbox</h4>
           {inboxListContent}
         </InboxList>
+      );
+    }
 
+    return (
+      <InboxContainer>
+        {inboxContent}
         {messageWindowContent}
         <form onSubmit={this.onSubmit}>{makeNewMessageInputs}</form>
       </InboxContainer>

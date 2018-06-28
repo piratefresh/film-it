@@ -10,7 +10,7 @@ export default class RoleInputs extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      inputCount: 0,
+      inputCount: 1,
       roleTitles: [],
       roleDesc: []
     };
@@ -19,6 +19,16 @@ export default class RoleInputs extends Component {
     this.addMoreInputs = this.addMoreInputs.bind(this);
     this.removeInputs = this.removeInputs.bind(this);
     this.onChange = this.onChange.bind(this);
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.roleTitles && newProps.roleDesc) {
+      this.setState({
+        inputCount: newProps.roleTitles.length,
+        roleTitles: newProps.roleTitles,
+        roleDesc: newProps.roleDesc
+      });
+    }
   }
 
   addMoreInputs(e) {
@@ -38,9 +48,6 @@ export default class RoleInputs extends Component {
     let roleTitles = [...this.state.roleTitles];
     let roleDesc = [...this.state.roleDesc];
 
-    console.log(i);
-    console.log(roleTitles, roleDesc);
-
     if (name === "roleTitles") {
       roleTitles[i] = value;
     } else {
@@ -51,7 +58,7 @@ export default class RoleInputs extends Component {
       roleTitles,
       roleDesc
     });
-    this.props.getState(this.state.roleTitles, this.state.roleDesc);
+    this.props.getState(roleTitles, roleDesc);
   };
 
   addInput(index) {
@@ -64,8 +71,12 @@ export default class RoleInputs extends Component {
           name="roleTitles"
           value={this.state.roleTitles[index]}
           onChange={this.onChange(index)}
+          error={this.props.errorTitle}
+          info="Title of the role you are seeking"
         />
-        <FormLabel htmlFor="Role Description">Role Description</FormLabel>
+        <FormLabel htmlFor="Role Description" style={{ marginTop: "5%" }}>
+          Role Description
+        </FormLabel>
         <FormTextArea
           key={index}
           name="roleDesc"
@@ -73,6 +84,8 @@ export default class RoleInputs extends Component {
           onChange={this.onChange(index)}
           rows="10"
           cols="50"
+          error={this.props.errorDesc}
+          info="Description for the role you are seeking"
         />
       </div>
     );
@@ -91,7 +104,9 @@ export default class RoleInputs extends Component {
     return (
       <div style={{ width: "100%" }}>
         {this.inputs()}
-        <Button onClick={this.addMoreInputs}>Add Role Description</Button>
+        <Button onClick={this.addMoreInputs} style={{ marginBottom: "5%" }}>
+          Add Role Description
+        </Button>
         <Button onClick={this.removeInputs}>Remove Role Description </Button>
       </div>
     );

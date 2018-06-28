@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import PrivateRoute from "./components/common/PrivateRoute";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 //Redux
@@ -17,8 +16,6 @@ import store from "./store";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 //Components
-import Navbar from "./components/layout/Nav/Navbar";
-import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
 import CreateProfileNew from "./components/create-profile/CreateProfileNew";
@@ -36,18 +33,21 @@ import Applications from "./components/post/Applications";
 import Login from "./components/auth/Login";
 import Messenger from "./components/real-time-messaging/Messenger";
 import MessageWindow from "./components/real-time-messaging/MessageWindow";
-// Test
-import RoleInputs from "./components/posts/RoleInputs";
+import Navbar from "./components/layout/Nav/Navbar";
+import Landing from "./components/layout/Landing";
+//Layouts
+import AppRoute from "./components/layout/AppRoute";
+import PrivateRoute from "./components/common/PrivateRoute";
+import LandingLayout from "./components/layout/LandingLayout";
+import MainLayout from "./components/layout/MainLayout";
 // Styling
 import "./App.css";
 import "normalize.css";
-
 import bgPattern from "./img/svg/topography.svg";
 //Styled Components
 import styled from "styled-components";
 import getCookie from "./components/common/CheckCookie";
 
-const Wrapper = styled.div``;
 const Container = styled.div`
   margin: 5% auto;
   width: 1000px;
@@ -60,10 +60,6 @@ const Container = styled.div`
   }
 `;
 
-//LOGGED IN CHECKS
-const auth = {
-  isAuthenticated: false
-};
 // Check for token
 if (localStorage.jwtToken) {
   // Set auth token header auth
@@ -121,74 +117,123 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div className="App">
-          <Wrapper>
-            <Navbar />
-            <Container>
-              <Switch>
-                <PrivateRoute
-                  exact
-                  path="/messenger"
-                  component={Messenger}
-                  name={handle}
-                />
-                <Route exact path="/extrainputs" component={RoleInputs} />
-                <Route exact path="/" component={Posts} />
-                <Route exact path="/register" component={Register} />
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/profiles" component={Profiles} />
-                <Route exact path="/profile/:handle" component={Profile} />
-                <Route exact path="/feed" component={Posts} />
-                <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <PrivateRoute exact path="/inbox" component={Messenger} />
-                <PrivateRoute
-                  exact
-                  path="/inbox/:id"
-                  component={MessageWindow}
-                />
-                <PrivateRoute
-                  exact
-                  path="/create-profile"
-                  component={CreateProfileNew}
-                />
-                <PrivateRoute
-                  exact
-                  path="/edit-profile"
-                  component={EditProfile}
-                />
-                <PrivateRoute
-                  exact
-                  path="/profile-picture"
-                  component={EditProfilePicture}
-                />
-                <PrivateRoute
-                  exact
-                  path="/add-experience"
-                  component={AddExperience}
-                />
-                <PrivateRoute
-                  exact
-                  path="/profile-gallery"
-                  component={EditGalleryPictures}
-                />
-                <PrivateRoute exact path="/post/:id" component={Post} />
-                <PrivateRoute
-                  exact
-                  path="/edit-post/:id"
-                  component={EditPostForm}
-                />
-                <PrivateRoute
-                  exact
-                  path="/applications/:id"
-                  component={Applications}
-                />
-                <PrivateRoute exact path="/add-post" component={PostForm} />
-                <Route component={NoMatch} />
-              </Switch>
-            </Container>
-            <Footer>
-              <p>Film-It &copy; {new Date().getFullYear()}</p>
-            </Footer>
-          </Wrapper>
+          <Navbar />
+          <Switch>
+            <AppRoute
+              exact
+              path="/"
+              layout={LandingLayout}
+              component={Landing}
+            />
+            <AppRoute
+              exact
+              path="/register"
+              layout={MainLayout}
+              component={Register}
+            />
+            <AppRoute
+              exact
+              path="/login"
+              layout={MainLayout}
+              component={Login}
+            />
+            <AppRoute
+              exact
+              path="/profiles"
+              layout={MainLayout}
+              component={Profiles}
+            />
+            <AppRoute
+              exact
+              path="/profile/:handle"
+              layout={MainLayout}
+              component={Profile}
+            />
+            <AppRoute
+              exact
+              path="/feed"
+              layout={MainLayout}
+              component={Posts}
+            />
+            <PrivateRoute
+              exact
+              path="/dashboard"
+              layout={MainLayout}
+              component={Dashboard}
+            />
+            <PrivateRoute
+              exact
+              path="/inbox"
+              layout={MainLayout}
+              component={Messenger}
+            />
+            <PrivateRoute
+              exact
+              path="/inbox/:id"
+              layout={MainLayout}
+              component={MessageWindow}
+            />
+            <PrivateRoute
+              exact
+              path="/inbox/profile/:handle"
+              layout={MainLayout}
+              component={Messenger}
+            />
+            <PrivateRoute
+              exact
+              path="/create-profile"
+              layout={MainLayout}
+              component={CreateProfileNew}
+            />
+            <PrivateRoute
+              exact
+              path="/edit-profile"
+              layout={MainLayout}
+              component={EditProfile}
+            />
+            <PrivateRoute
+              exact
+              path="/profile-picture"
+              layout={MainLayout}
+              component={EditProfilePicture}
+            />
+            <PrivateRoute
+              exact
+              path="/add-experience"
+              layout={MainLayout}
+              component={AddExperience}
+            />
+            <PrivateRoute
+              exact
+              path="/profile-gallery"
+              layout={MainLayout}
+              component={EditGalleryPictures}
+            />
+            <PrivateRoute
+              exact
+              path="/post/:id"
+              layout={MainLayout}
+              component={Post}
+            />
+            <PrivateRoute
+              exact
+              path="/edit-post/:id"
+              component={EditPostForm}
+            />
+            <PrivateRoute
+              exact
+              path="/applications/:id"
+              layout={MainLayout}
+              component={Applications}
+            />
+            <PrivateRoute
+              exact
+              path="/add-post"
+              layout={MainLayout}
+              component={PostForm}
+            />
+            <AppRoute layout={MainLayout} component={NoMatch} />
+          </Switch>
         </div>
       </BrowserRouter>
     );

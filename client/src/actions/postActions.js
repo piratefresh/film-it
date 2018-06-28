@@ -161,13 +161,12 @@ export const addApplication = (id, data, history) => dispatch => {
 
 // Delete Post
 export const deletePost = id => dispatch => {
-  dispatch(setPostLoading);
   axios
     .delete(`/api/posts/${id}`)
     .then(res =>
       dispatch({
         type: DELETE_POST,
-        payload: res.data
+        payload: id
       })
     )
     .catch(err =>

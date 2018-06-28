@@ -6,18 +6,22 @@ import { getMessageById } from "../../actions/messageActions";
 // Styled Components
 import styled from "styled-components";
 import Spinner from "../common/Spinner";
+import Link from "../common/Link";
 // Socket.io
 import { socket } from "../../store";
+// Font awesome
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 
 const Window = styled.div`
+  position: relative;
+  z-index: 1;
   grid-area: messages;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
   margin-bottom: 5%;
   padding: 2% 2%;
-  overflow: auto;
   overflow-y: scroll;
-
-  height: 600px;
+  height: 55vh;
   p {
     font-size: 0.8rem;
   }
@@ -26,6 +30,40 @@ const Window = styled.div`
     width: 25px;
     border-radius: 50%;
     object-fit:cover;
+  }
+  @media (max-width: 650px) {
+    img {
+    height: 20px
+    width: 20px;
+    border-radius: 50%;
+    object-fit:cover;
+    }
+  }
+`;
+const MessageHeader = styled.div`
+  display: flex;
+  color: #fff;
+  background: #7d48df;
+  align-items: center;
+  a {
+    width: 60px;
+  }
+  @media (max-width: 650px) {
+    margin-bottom: 5%;
+  }
+`;
+const MessageHeaderDetails = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  h4 {
+    padding: 3% 0;
+  }
+  img {
+    width: 30px;
+    height: 30px;
+    padding-right: 3%;
   }
 `;
 const ImgWrapper = styled.div`
@@ -151,7 +189,26 @@ class MessageWindow extends Component {
         });
       }
     }
-    return <Window ref="chatWindow">{content} </Window>;
+    return (
+      <Window ref="chatWindow">
+        {" "}
+        <MessageHeader>
+          <Link href="/inbox">
+            <FontAwesomeIcon
+              icon={faAngleLeft}
+              size="2x"
+              color="#fff"
+              style={{ marginLeft: "19%" }}
+            />
+          </Link>
+          <MessageHeaderDetails>
+            <img src={currentMessage.avatars[0]} alt="" />
+            <h4>{currentMessage.participants[0]}</h4>
+          </MessageHeaderDetails>
+        </MessageHeader>
+        {content}
+      </Window>
+    );
   }
 }
 

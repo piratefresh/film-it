@@ -3,15 +3,16 @@ import { Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
-  const { isAuthenticated, loading } = rest;
-  console.log(isAuthenticated, loading);
+const PrivateRoute = ({ component: Component, layout: Layout, ...rest }) => {
+  const { isAuthenticated } = rest;
   return (
     <Route
       {...rest}
       render={props =>
         isAuthenticated === true ? (
-          <Component {...props} />
+          <Layout>
+            <Component {...props} />
+          </Layout>
         ) : (
           <Redirect
             to={{
@@ -26,10 +27,14 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 };
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  loading: state.profile.loading
+  isAuthenticated: state.auth.isAuthenticated
 });
 
-export default connect(mapStateToProps, null, null, {
-  pure: false
-})(PrivateRoute);
+export default connect(
+  mapStateToProps,
+  null,
+  null,
+  {
+    pure: false
+  }
+)(PrivateRoute);

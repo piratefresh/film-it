@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import isEmpty from "../../validation/is-empty";
+import toTitleCase from "../common/toTitleCase";
+// styled components
 import styled from "styled-components";
 import Link from "../common/Link";
+import Button from "../common/Button";
 
 const ProfileDetails = styled.div`
   display: flex;
@@ -39,9 +42,16 @@ class ProfileHeader extends Component {
     const { profileHandle } = this.props;
     return (
       <ProfileDetails>
-        <h3>
-          {profileHandle && profileHandle.user ? profileHandle.user.name : ""}
-        </h3>
+        <h4>
+          Username:{" "}
+          {profileHandle && profileHandle.handle ? profileHandle.handle : ""}
+        </h4>
+        <p>
+          Name:{" "}
+          {profileHandle && profileHandle.user
+            ? toTitleCase(profileHandle.user.name)
+            : ""}
+        </p>
         <p>
           {profileHandle.role} @{" "}
           {isEmpty(profileHandle.company) ? null : profileHandle.company}
@@ -52,6 +62,13 @@ class ProfileHeader extends Component {
             {profileHandle.city}, {profileHandle.state}
           </strong>
         </p>
+
+        {/* links to inbox with id */}
+        <Link href={`/inbox/profile/${profileHandle.handle}`}>
+          <Button>Send Message</Button>
+        </Link>
+
+        {/* Social Network  */}
         {isEmpty(profileHandle.website) ? null : (
           <Link href={profileHandle.website} target="_blank">
             <i className="fas fa-cubes" />
